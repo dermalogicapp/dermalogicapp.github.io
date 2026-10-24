@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DermaLogic</title>
+    <meta name="description" content="DermaLogic: private, on-device skin analysis, personalized routines, progress tracking and a voice-enabled skincare assistant." />
+    <meta name="theme-color" content="#7b1e3a" />
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJhIiBjeD0iMzUlIiBjeT0iMzAlIiByPSI3NSUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzliMmM0ZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzVhMGYyYSIvPjwvcmFkaWFsR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJiIiBjeD0iMzUlIiBjeT0iMzAlIiByPSI3NSUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Y3YjZjOCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q5NTU3ZiIvPjwvcmFkaWFsR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJjIiBjeD0iMzUlIiBjeT0iMzAlIiByPSI3NSUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Y0YTZjMSIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjE0IiBmaWxsPSIjZmNlOGVmIi8+PGNpcmNsZSBjeD0iMjYiIGN5PSIzNCIgcj0iMjAiIGZpbGw9InVybCgjYSkiLz48ZWxsaXBzZSBjeD0iMTkiIGN5PSIyNS42IiByeD0iNi40IiByeT0iMy40IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii44NSIgdHJhbnNmb3JtPSJyb3RhdGUoLTMwIDE5IDI1LjYpIi8+PGNpcmNsZSBjeD0iNDYiIGN5PSIxOCIgcj0iMTEiIGZpbGw9InVybCgjYikiLz48ZWxsaXBzZSBjeD0iNDIuMiIgY3k9IjEzLjQiIHJ4PSIzLjUiIHJ5PSIxLjkiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjg1IiB0cmFuc2Zvcm09InJvdGF0ZSgtMzAgNDIuMiAxMy40KSIvPjxjaXJjbGUgY3g9IjQ4IiBjeT0iNDYiIHI9IjciIGZpbGw9InVybCgjYykiLz48L3N2Zz4K" type="image/svg+xml" />
+    <style>
+:root {
+  --bg: #fff8fa;
+  --pink: #f4a6c1;
+  --blush: #fce8ef;
+  --burgundy-deep: #4a0e22;
+  --surface: #ffffff;
+  --text: #2a1017;
+  --muted: #6b4a55;
+  --border: #f0d3dc;
+  --primary: #7b1e3a;
+  --primary-ink: #ffffff;
+  --accent-bg: #fce8ef;
+  --warn-bg: #fff6e0;
+  --warn-border: #c98a00;
+  --danger: #b42318;
+  --danger-bg: #fdecea;
+  --focus: #c2185b;
+  --low: #166534;
+  --mod: #8a5a00;
+  --high: #b42318;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 2px 8px rgb(0 0 0 / 0.04);
+  font-size: 100%;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a0d12;
+    --surface: #24131a;
+    --text: #fbeef2;
+    --muted: #d6b3bf;
+    --border: #4a2a35;
+    --primary: #f4a6c1;
+    --primary-ink: #3a0a1c;
+    --accent-bg: #3a1a26;
+    --warn-bg: #33270b;
+    --warn-border: #e0a526;
+    --danger: #ff8a7a;
+    --danger-bg: #3a1714;
+    --focus: #ffd1de;
+    --low: #4ade80;
+    --mod: #fbbf24;
+    --high: #ff8a7a;
+  }
+}
+
+html.high-contrast {
+  --bg: #000;
+  --surface: #000;
+  --text: #fff;
+  --muted: #fff;
+  --border: #fff;
+  --primary: #ffff00;
+  --primary-ink: #000;
+  --accent-bg: #000;
+  --warn-bg: #000;
+  --danger-bg: #000;
+  --focus: #00ffff;
+}
+html.large-text { font-size: 118.75%; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.55;
+  background: var(--bg);
+  color: var(--text);
+}
+a { color: var(--primary); }
+html.high-contrast a { text-decoration: underline; }
+img, video, canvas, svg { max-width: 100%; }
+h1 { font-size: 1.85rem; line-height: 1.2; margin: 0.25rem 0 0.5rem; }
+h2 { font-size: 1.3rem; margin: 0 0 0.75rem; }
+h3 { font-size: 1.05rem; margin: 1.1rem 0 0.4rem; }
+h4 { margin: 0.75rem 0 0.25rem; }
+h1:focus, h2:focus, h3:focus { outline: none; }
+h1:focus-visible, h2:focus-visible, h3:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip-link { position: absolute; left: 0.5rem; top: -3rem; z-index: 100; background: var(--primary); color: var(--primary-ink); padding: 0.6rem 1rem; border-radius: 8px; }
+.skip-link:focus { top: 0.5rem; }
+
+.app-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.75rem 1rem; background: var(--surface); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+}
+.brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.2rem; }
+.header-actions { display: flex; gap: 0.5rem; align-items: center; }
+.menu-toggle { display: none; }
+
+.layout { display: grid; grid-template-columns: 230px 1fr; max-width: 1200px; margin: 0 auto; }
+.primary-nav ul { list-style: none; margin: 0; padding: 1rem 0.5rem; position: sticky; top: 4rem; }
+.primary-nav a {
+  display: block; padding: 0.6rem 0.85rem; border-radius: 8px; color: var(--text); text-decoration: none; min-height: 44px;
+}
+.primary-nav a:hover { background: var(--accent-bg); }
+.primary-nav a[aria-current='page'] { background: var(--primary); color: var(--primary-ink); font-weight: 600; }
+
+main { padding: 1rem 1.25rem 3rem; min-width: 0; }
+main:focus { outline: none; }
+.lead { color: var(--muted); font-size: 1.05rem; margin-top: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 0.9rem; }
+.req { color: var(--muted); font-weight: 400; font-size: 0.9rem; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.1rem 1.25rem; margin: 1rem 0; box-shadow: var(--shadow);
+}
+.card-accent { border-left: 5px solid var(--primary); }
+.card-warn { border-left: 5px solid var(--warn-border); background: var(--warn-bg); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 1.25rem; }
+.grid-2 > .card { margin: 0.5rem 0; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  min-height: 44px; padding: 0.55rem 1rem; border-radius: 10px; border: 1.5px solid var(--primary);
+  background: var(--surface); color: var(--primary); font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+}
+.btn:hover { background: var(--accent-bg); }
+.btn-primary { background: var(--primary); color: var(--primary-ink); }
+.btn-primary:hover { filter: brightness(1.08); background: var(--primary); }
+.btn-ghost { border-color: transparent; }
+.btn-danger { border-color: var(--danger); color: var(--danger); }
+.btn-small { min-height: 38px; padding: 0.35rem 0.75rem; font-size: 0.92rem; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-voice.listening, .btn[aria-pressed='true'] { background: var(--danger); border-color: var(--danger); color: #fff; animation: pulse 1.4s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 6px rgb(180 35 24 / 0.25); } }
+.btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
+.file-btn { position: relative; }
+.file-btn:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.form .field, .field { margin: 0.75rem 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.field.inline { flex-direction: row; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+label { font-weight: 600; }
+.check { display: flex; gap: 0.6rem; align-items: flex-start; font-weight: 400; padding: 0.35rem 0; min-height: 44px; cursor: pointer; }
+.check input { width: 1.25rem; height: 1.25rem; margin-top: 0.15rem; flex: none; accent-color: var(--primary); }
+input:not([type='checkbox']):not([type='radio']):not([type='range']), select, textarea {
+  font: inherit; padding: 0.6rem 0.7rem; border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--surface); color: var(--text); min-height: 44px; width: 100%;
+}
+input[type='range'] { width: 100%; accent-color: var(--primary); min-height: 32px; }
+fieldset { border: 1px solid var(--border); border-radius: 10px; margin: 1rem 0; padding: 0.5rem 1rem 0.75rem; }
+legend { font-weight: 700; padding: 0 0.35rem; }
+.options.cols-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 1rem; }
+.options.inline { display: flex; flex-wrap: wrap; gap: 0 1rem; }
+.hint { margin: 0; color: var(--muted); font-size: 0.9rem; font-weight: 400; }
+.error { color: var(--danger); font-weight: 600; min-height: 1px; }
+.inline-form { display: flex; gap: 0.5rem; }
+
+.callout { background: var(--accent-bg); border-radius: 10px; padding: 0.75rem 1rem; margin: 0.75rem 0; }
+.callout ul { margin: 0.25rem 0 0; padding-left: 1.2rem; }
+.callout-danger { background: var(--danger-bg); border-left: 4px solid var(--danger); }
+
+.badge { display: inline-block; padding: 0.1rem 0.55rem; border-radius: 999px; font-size: 0.85rem; font-weight: 700; border: 1.5px solid currentColor; }
+.badge-low { color: var(--low); }
+.badge-moderate { color: var(--mod); }
+.badge-noticeable { color: var(--high); }
+
+.meter { height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; margin: 0.35rem 0; }
+.meter span { display: block; height: 100%; background: var(--primary); border-radius: 999px; }
+.concerns { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.25rem 1.5rem; }
+.concern-head { display: flex; justify-content: space-between; gap: 0.5rem; }
+
+.camera-wrap { position: relative; max-width: 560px; border-radius: var(--radius); overflow: hidden; background: #000; margin-bottom: 0.5rem; }
+.camera-wrap video { display: block; width: 100%; transform: scaleX(-1); }
+.guide-oval {
+  position: absolute; left: 30%; top: 14%; width: 40%; height: 68%;
+  border: 3px dashed rgb(255 255 255 / 0.9); border-radius: 50%;
+  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.35);
+}
+.camera-hint { position: absolute; bottom: 0.25rem; left: 0; right: 0; text-align: center; color: #fff; margin: 0; text-shadow: 0 1px 3px #000; }
+
+.result-grid { display: grid; grid-template-columns: minmax(200px, 340px) 1fr; gap: 1.25rem; align-items: start; }
+.result-photo { margin: 0; }
+.result-canvas { width: 100%; border-radius: 10px; }
+.tone { display: flex; gap: 1rem; align-items: center; }
+.swatch { width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--border); flex: none; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.75rem; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; font-weight: 600; }
+
+.routine { padding-left: 1.2rem; }
+.routine li { margin: 0.5rem 0; }
+.routine li strong { display: block; }
+.chips { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chips li { background: var(--accent-bg); padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.92rem; }
+.chips-warn li { background: var(--danger-bg); }
+.ing-list li { margin: 0.5rem 0; }
+
+.checklist { margin: 0.5rem 0; }
+.banner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: var(--radius); padding: 0.5rem 1rem; margin-bottom: 0.5rem; }
+.banner p { margin: 0; }
+
+.table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.95rem; }
+.table th, .table td { text-align: left; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--border); }
+.table caption { text-align: left; font-weight: 600; padding-bottom: 0.25rem; }
+section > .table, .card > .table { display: block; overflow-x: auto; }
+
+.compare { position: relative; max-width: 560px; border-radius: 10px; overflow: hidden; }
+.compare img { display: block; width: 100%; }
+.compare-after { position: absolute; inset: 0; }
+.compare-after img { width: 100%; height: 100%; object-fit: cover; }
+.compare-line { position: absolute; top: 0; bottom: 0; width: 3px; background: #fff; box-shadow: 0 0 4px #000; transform: translateX(-50%); }
+.side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.side-by-side figure, .gallery figure { margin: 0; }
+.side-by-side img { width: 100%; border-radius: 10px; }
+.gallery { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+.gallery img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; }
+.gallery figcaption { font-size: 0.88rem; color: var(--muted); }
+
+.chart { margin: 0.5rem 0; }
+.chart svg { width: 100%; height: auto; }
+.chart .bar { fill: var(--primary); }
+.chart .axis, .chart .val { fill: var(--muted); font-size: 10px; }
+.chart figcaption { font-size: 0.9rem; color: var(--muted); }
+
+.voice-controls { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; align-items: center; }
+.chat-log { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; max-height: 55vh; min-height: 200px; overflow-y: auto; }
+.msg { margin: 0.5rem 0; display: flex; }
+.msg p { margin: 0; padding: 0.6rem 0.9rem; border-radius: 14px; max-width: 85%; }
+.msg-user { justify-content: flex-end; }
+.msg-user p { background: var(--primary); color: var(--primary-ink); }
+.msg-bot p { background: var(--accent-bg); }
+.msg-urgent p { background: var(--danger-bg); border: 2px solid var(--danger); }
+.chat-form { display: flex; gap: 0.5rem; margin: 0.75rem 0; }
+.chat-form input { flex: 1; }
+.suggestions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+.chip-btn { font: inherit; font-size: 0.92rem; padding: 0.4rem 0.8rem; min-height: 38px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+.chip-btn:hover { border-color: var(--primary); }
+
+.steps li { margin: 0.4rem 0; }
+.tips summary, details summary { cursor: pointer; font-weight: 600; min-height: 32px; }
+
+.app-footer { border-top: 1px solid var(--border); padding: 1rem 1.25rem 2rem; color: var(--muted); font-size: 0.9rem; max-width: 1200px; margin: 0 auto; }
+
+.toasts { position: fixed; bottom: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 50; max-width: min(420px, calc(100vw - 2rem)); }
+.toast { background: var(--text); color: var(--bg); padding: 0.75rem 1rem; border-radius: 10px; box-shadow: var(--shadow); }
+.toast-error { background: var(--danger); color: #fff; }
+
+dialog { border: none; border-radius: var(--radius); max-width: 560px; padding: 1.5rem; background: var(--surface); color: var(--text); }
+dialog::backdrop { background: rgb(0 0 0 / 0.55); }
+
+kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.3rem; font-size: 0.9em; }
+
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; }
+  .menu-toggle { display: inline-flex; }
+  .primary-nav { display: none; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .primary-nav.open { display: block; }
+  .primary-nav ul { position: static; display: grid; grid-template-columns: 1fr 1fr; }
+  .result-grid { grid-template-columns: 1fr; }
+  main { padding: 1rem; }
+  .btn-voice { padding: 0.5rem 0.75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 480px) {
+  .hide-sm { display: none; }
+  .brand-name { font-size: 1.05rem; }
+}
+
+/* Animated droplet icon (js/icon.js) */
+.droplets { display: block; overflow: visible; }
+.droplets .drop { animation: drop-float 4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.droplets .fizz { animation: fizz 2.6s ease-in-out infinite; }
+@keyframes drop-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(calc(var(--drift, 1) * 2.5px), -5px) scale(1.04); }
+}
+@keyframes fizz {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50% { opacity: 0.9; transform: translateY(-1.5px); }
+}
+.droplets.busy .drop { animation-duration: 1.4s !important; }
+.brand .droplets { flex: none; }
+
+.hero {
+  position: relative; overflow: hidden; border-radius: 18px; margin: 0.5rem 0 1rem;
+  background: linear-gradient(135deg, #4a0e22 0%, #7b1e3a 45%, #d9557f 80%, #f7b6c8 100%);
+  color: #fff; padding: 1.5rem 1.5rem 1.25rem; display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 1rem;
+}
+.hero h1 { color: #fff; margin: 0 0 0.25rem; }
+.hero p { margin: 0; color: #fde7ee; }
+.hero .droplets-banner { max-height: 170px; }
+html.high-contrast .hero { background: #000; border: 2px solid #fff; }
+@media (max-width: 640px) { .hero { grid-template-columns: 1fr; } .hero .droplets-banner { max-height: 110px; } }
+
+.loader { display: flex; align-items: center; gap: 0.75rem; }
+.msg-bot { gap: 0.5rem; align-items: flex-start; }
+.msg-bot .droplets { margin-top: 0.3rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .droplets .drop, .droplets .fizz { animation: none !important; }
+}
+
+</style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="app-header">
+      <div class="brand">
+        <span id="brand-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJhIiBjeD0iMzUlIiBjeT0iMzAlIiByPSI3NSUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzliMmM0ZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzVhMGYyYSIvPjwvcmFkaWFsR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJiIiBjeD0iMzUlIiBjeT0iMzAlIiByPSI3NSUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Y3YjZjOCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q5NTU3ZiIvPjwvcmFkaWFsR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJjIiBjeD0iMzUlIiBjeT0iMzAlIiByPSI3NSUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Y0YTZjMSIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjE0IiBmaWxsPSIjZmNlOGVmIi8+PGNpcmNsZSBjeD0iMjYiIGN5PSIzNCIgcj0iMjAiIGZpbGw9InVybCgjYSkiLz48ZWxsaXBzZSBjeD0iMTkiIGN5PSIyNS42IiByeD0iNi40IiByeT0iMy40IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii44NSIgdHJhbnNmb3JtPSJyb3RhdGUoLTMwIDE5IDI1LjYpIi8+PGNpcmNsZSBjeD0iNDYiIGN5PSIxOCIgcj0iMTEiIGZpbGw9InVybCgjYikiLz48ZWxsaXBzZSBjeD0iNDIuMiIgY3k9IjEzLjQiIHJ4PSIzLjUiIHJ5PSIxLjkiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjg1IiB0cmFuc2Zvcm09InJvdGF0ZSgtMzAgNDIuMiAxMy40KSIvPjxjaXJjbGUgY3g9IjQ4IiBjeT0iNDYiIHI9IjciIGZpbGw9InVybCgjYykiLz48L3N2Zz4K" alt="" width="34" height="34" /></span>
+        <span class="brand-name">DermaLogic</span>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="voice-fab" class="btn btn-voice" aria-label="Ask by voice" aria-describedby="voice-hint">
+          <span aria-hidden="true">🎙</span> <span><span class="hide-sm">Ask by </span>voice</span>
+        </button>
+        <span id="voice-hint" class="sr-only">Keyboard shortcut: Alt plus V</span>
+        <button type="button" id="menu-toggle" class="btn btn-ghost menu-toggle" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav id="primary-nav" class="primary-nav" aria-label="Main">
+        <ul>
+          <li><a href="#/home" data-route="home">Today</a></li>
+          <li><a href="#/analyze" data-route="analyze">Face scan</a></li>
+          <li><a href="#/profile" data-route="profile">Skin profile</a></li>
+          <li><a href="#/routine" data-route="routine">My routine</a></li>
+          <li><a href="#/complaints" data-route="complaints">Complaints</a></li>
+          <li><a href="#/progress" data-route="progress">Progress photos</a></li>
+          <li><a href="#/lifestyle" data-route="lifestyle">Lifestyle</a></li>
+          <li><a href="#/ingredients" data-route="ingredients">Ingredient checker</a></li>
+          <li><a href="#/chat" data-route="chat">Assistant</a></li>
+          <li><a href="#/reminders" data-route="reminders">Reminders</a></li>
+          <li><a href="#/settings" data-route="settings">Settings &amp; privacy</a></li>
+        </ul>
+      </nav>
+
+      <main id="main" tabindex="-1">
+        <div id="banners" aria-live="polite"></div>
+        <div id="view"></div>
+      </main>
+    </div>
+
+    <footer class="app-footer">
+      <p><strong>Not medical advice.</strong> DermaLogic gives general skin-care information and camera-based estimates. It does not diagnose or treat any condition. See a doctor or dermatologist for anything painful, spreading, bleeding or changing.</p>
+      <p>Your photos and data stay on this device.</p>
+    </footer>
+
+    <!-- Toasts are visual; the same text is announced through #sr-status / #sr-alert. -->
+    <div id="toasts" class="toasts" aria-hidden="true"></div>
+    <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+    <div id="sr-alert" class="sr-only" role="alert" aria-live="assertive"></div>
+
+    <dialog id="disclaimer" aria-labelledby="disclaimer-title" aria-describedby="disclaimer-body">
+      <h2 id="disclaimer-title">Before you start</h2>
+      <div id="disclaimer-body">
+        <p>DermaLogic gives general skin-care information and estimates from your camera. <strong>It is not a medical device and is not medical advice.</strong> It cannot diagnose skin conditions, and results depend on lighting and camera quality.</p>
+        <p>Photos are analyzed on this device and are not uploaded. Your data is saved only in this browser.</p>
+        <p>If you have a painful, spreading, bleeding or changing skin problem, or signs of an allergic reaction such as swelling of the face, lips or throat, seek medical care.</p>
+      </div>
+      <form method="dialog">
+        <button class="btn btn-primary" value="ok" autofocus>I understand</button>
+      </form>
+    </dialog>
+
+    <script type="module">
+var _e="dermalogic:v1",ae=()=>({profile:null,analyses:[],complaints:[],products:[],lifestyle:{},routineLog:{},reminders:{enabled:!1,am:"07:30",pm:"21:30",sunscreen:!1,lifestyle:"20:00",lastFired:{}},chat:[],settings:{speak:!1,rate:1,acceptedDisclaimer:!1,highContrast:!1,largeText:!1}}),W=Ut(),qe=new Set;function Ut(){try{let e=localStorage.getItem(_e);if(!e)return ae();let t=JSON.parse(e),n=ae();return{...n,...t,reminders:{...n.reminders,...t.reminders},settings:{...n.settings,...t.settings}}}catch{return ae()}}function Ne(){try{localStorage.setItem(_e,JSON.stringify(W))}catch(e){console.warn("Could not save",e)}qe.forEach(e=>e(W))}var y={get:()=>W,update(e){e(W),Ne()},subscribe(e){return qe.add(e),()=>qe.delete(e)},exportJSON(){return JSON.stringify(W,null,2)},importJSON(e){let t=JSON.parse(e);W={...ae(),...t},Ne()},async reset(){W=ae(),Ne(),await O.clear()}},Y=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7),R=(e=new Date)=>{let t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`};function Bt(){return new Promise((e,t)=>{let n=indexedDB.open("dermalogic",1);n.onupgradeneeded=()=>n.result.createObjectStore("photos",{keyPath:"id"}),n.onsuccess=()=>e(n.result),n.onerror=()=>t(n.error)})}async function de(e,t){let n=await Bt();return new Promise((a,o)=>{let s=n.transaction("photos",e),i=s.objectStore("photos"),r=t(i);s.oncomplete=()=>a(r?.result??r),s.onerror=()=>o(s.error)})}var O={add:e=>de("readwrite",t=>t.put(e)),remove:e=>de("readwrite",t=>t.delete(e)),clear:()=>de("readwrite",e=>e.clear()).catch(()=>{}),async all(){try{return(await de("readonly",t=>t.getAll())||[]).sort((t,n)=>t.date<n.date?-1:1)}catch{return[]}}};var u=e=>String(e??"").replace(/[&<>"']/g,t=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[t]),H=(e,t=document)=>t.querySelector(e),We=(e,t=document)=>[...t.querySelectorAll(e)];function D(e,t=!1){let n=document.getElementById(t?"sr-alert":"sr-status");n&&(n.textContent="",setTimeout(()=>n.textContent=e,50))}function C(e,t="info"){let n=document.getElementById("toasts"),a=document.createElement("div");for(a.className=`toast toast-${t}`,a.textContent=e,n.appendChild(a);n.children.length>3;)n.firstElementChild.remove();D(e,t==="error"),setTimeout(()=>a.remove(),6e3)}var L=(e,t={dateStyle:"medium"})=>{try{return new Intl.DateTimeFormat(void 0,t).format(new Date(e.length===10?e+"T12:00:00":e))}catch{return e}},I=(e,t="")=>e?.length?`<ul class="${t}">${e.map(n=>`<li>${u(n)}</li>`).join("")}</ul>`:"";function Ve(e){let t={low:"Low",moderate:"Moderate",noticeable:"Noticeable"}[e]||e;return`<span class="badge badge-${u(e)}">${u(t)}</span>`}function Ke(e,t){return`<div class="meter" role="img" aria-label="${u(t)}: ${e} out of 100"><span style="width:${Math.max(2,e)}%"></span></div>`}function U(e){let t={};for(let n of e.elements)n.name&&(n.type==="checkbox"?n.dataset.multi!==void 0?(t[n.name]=t[n.name]||[],n.checked&&t[n.name].push(n.value)):t[n.name]=n.checked:n.type==="radio"?n.checked?t[n.name]=n.value:n.name in t||(t[n.name]=""):t[n.name]=n.value);return t}function ue(e,t=720,n=.82){let a=Math.min(1,t/Math.max(e.width,e.height));if(a===1)return e.toDataURL("image/jpeg",n);let o=document.createElement("canvas");return o.width=Math.round(e.width*a),o.height=Math.round(e.height*a),o.getContext("2d").drawImage(e,0,0,o.width,o.height),o.toDataURL("image/jpeg",n)}var Gt=e=>{let[t,n]=String(e||"").split(":").map(Number);return Number.isFinite(t)?t*60+(n||0):null};function Je(e,t,n){if(!t?.enabled)return[];let a=e.getHours()*60+e.getMinutes(),o=t.lastFired||{},s=[{id:"am",time:t.am,title:"Morning routine",body:"Time for your morning skincare: cleanse, treat, moisturize and sunscreen."},{id:"pm",time:t.pm,title:"Evening routine",body:"Time for your evening skincare routine."},{id:"lifestyle",time:t.lifestyle,title:"Daily check-in",body:"Log today's sleep, food, exercise and how your skin feels."}];if(t.sunscreen)for(let i of["11:00","13:00","15:00"])s.push({id:`spf-${i}`,time:i,title:"Sunscreen top-up",body:"If you are outdoors, reapply your sunscreen."});return s.filter(i=>{let r=Gt(i.time);return r!==null&&a>=r&&a-r<=120&&o[i.id]!==n})}function Pe(e,t){let n=new Date(e);return n.setDate(n.getDate()+t),n.toISOString()}function ie(e,t=new Date){return(e||[]).filter(n=>!n.resolved&&n.nextFollowUp&&new Date(n.nextFollowUp)<=t)}function Xe(e,t){return e==="better"?{text:"Good news. Keep doing what is working. We will check in again in a week.",nextDays:7}:e==="resolved"?{text:"Glad it has cleared up. This complaint is now marked as resolved.",nextDays:null,resolve:!0}:e==="same"?(t.followUps||[]).filter(a=>a.answer==="same").length>=1?{text:"It has not changed over two check-ins. If it has lasted more than 2 to 3 weeks, it is worth showing a pharmacist or doctor.",nextDays:5}:{text:"Thanks for the update. Give the steps a few more days; we will check again soon.",nextDays:4}:{text:"Sorry it is getting worse. Stop any new or active products, keep to gentle basics, and please see a doctor or dermatologist, especially if it is spreading, painful or blistering.",nextDays:2,escalate:!0}}var N={acne:{label:"Breakouts / acne",helps:["Salicylic acid","Azelaic acid","Niacinamide","Benzoyl peroxide","Retinol","Sulfur"],tips:["Cleanse twice a day with a gentle, non-stripping cleanser.","Use one acne active at a time and give it 6 to 8 weeks.","Choose products labelled non-comedogenic and avoid heavy oils such as coconut oil and cocoa butter on the face.","Change pillowcases twice a week and avoid picking, which leaves dark marks."],avoidTags:["comedogenic"]},hyperpigmentation:{label:"Dark spots / uneven tone",helps:["Azelaic acid","Niacinamide","Tranexamic acid","Alpha arbutin","Vitamin C derivatives","Licorice root"],tips:["Daily broad-spectrum SPF 30+ is the single most important step; a tinted sunscreen with iron oxides also blocks visible light.","Pigment fades slowly: expect 8 to 12 weeks for visible change.","Avoid harsh scrubs and strong peels that can cause new dark marks on deeper skin tones."]},redness:{label:"Redness / sensitivity",helps:["Centella asiatica","Azelaic acid","Niacinamide","Panthenol","Green tea","Licorice root","Colloidal oatmeal"],tips:["Keep the routine short: gentle cleanser, soothing moisturizer, mineral sunscreen.","Avoid fragrance, essential oils, alcohol denat. and hot water.","Persistent facial redness with bumps or flushing can be rosacea, which a doctor can treat."]},oiliness:{label:"Oiliness / shine",helps:["Niacinamide","Salicylic acid","Zinc PCA","Hyaluronic acid"],tips:["Do not skip moisturizer; use a light gel or lotion.","Over-washing can make skin produce more oil.","Blotting papers help during the day without stripping."]},dryness:{label:"Dryness / flaking",helps:["Ceramides","Glycerin","Hyaluronic acid","Squalane","Urea","Shea butter","Panthenol"],tips:["Apply moisturizer to damp skin within a few minutes of washing.","Use lukewarm water and a cream or milky cleanser.","Seal in moisture at night with a richer cream or a thin layer of petrolatum."]},texture:{label:"Rough texture / large-looking pores",helps:["Lactic acid","Mandelic acid","Salicylic acid","Retinol","Niacinamide","Gluconolactone (PHA)"],tips:["Exfoliate 1 to 3 times a week, not daily, and never on irritated skin.","Retinoids improve texture over 3 months; start twice a week."]},darkCircles:{label:"Dark under-eye circles",helps:["Caffeine","Vitamin C derivatives","Niacinamide","Peptides","Retinol"],tips:["Sleep, hydration and allergy control all play a part.","Many dark circles are genetic or structural and only partly respond to creams.","Sunscreen and sunglasses help prevent darkening."]},aging:{label:"Fine lines / firmness",helps:["Retinol","Peptides","Vitamin C (ascorbic acid)","Niacinamide","Bakuchiol"],tips:["Sunscreen every day prevents most visible skin aging.","Retinoids are the best-studied topical for fine lines."]}},V={oily:{label:"Oily",cleanser:"gel or foaming cleanser with gentle surfactants",moisturizer:"light, oil-free gel moisturizer",sunscreen:"matte or fluid sunscreen SPF 30+"},dry:{label:"Dry",cleanser:"cream or milky non-foaming cleanser",moisturizer:"rich cream with ceramides and glycerin",sunscreen:"moisturizing sunscreen SPF 30+"},combination:{label:"Combination",cleanser:"gentle gel cleanser",moisturizer:"lightweight lotion, a little richer on dry areas",sunscreen:"lightweight fluid sunscreen SPF 30+"},normal:{label:"Normal",cleanser:"gentle cleanser",moisturizer:"simple lotion with humectants",sunscreen:"broad-spectrum sunscreen SPF 30+"},sensitive:{label:"Sensitive",cleanser:"fragrance-free cream or micellar cleanser",moisturizer:"fragrance-free barrier cream with ceramides and panthenol",sunscreen:"mineral (zinc oxide) sunscreen SPF 30+"}},Ze={ectomorph:"Slim / lean frame",mesomorph:"Athletic / muscular frame",endomorph:"Fuller / curvier frame",mixed:"Somewhere in between",skip:"Prefer not to say"},Qe={ectomorph:["Thin skin over bony areas (elbows, knees) can get dry; use a rich body cream after bathing."],mesomorph:["Sweat after workouts can trigger body acne; shower soon after exercise and try a salicylic acid body wash on the chest and back."],endomorph:["Skin folds can trap moisture and cause chafing or dark patches; keep folds dry, use an anti-chafe balm, and wear breathable fabrics."],mixed:["Shower after heavy sweating and moisturize right after bathing."],skip:[]},ee={breakout:{label:"New breakout or pimples",steps:["Stop any new product you started in the last 2 to 4 weeks and note it in the Ingredient checker.","Use a salicylic acid or benzoyl peroxide spot treatment once daily on the spots only.","Do not squeeze; use a hydrocolloid patch on a spot that has come to a head.","Keep moisturizing with a light, non-comedogenic product."],redFlags:["Painful, deep lumps or cysts","Breakouts that leave scars","Acne that has not improved after 3 months of self-care"]},itching:{label:"Itching",steps:["Switch to fragrance-free, gentle products and cool (not hot) water.","Apply a soothing moisturizer with colloidal oatmeal, panthenol or ceramides.","A cool compress for 10 minutes can calm an itch flare.","Think about any new detergent, product, plant or food that may be a trigger."],redFlags:["Itching with hives across large areas","Itch that disturbs sleep for more than a week","Itching with yellow crusting or weeping"]},burning:{label:"Burning or stinging",steps:["Rinse off the product with cool water and stop all actives (acids, retinoids, vitamin C, scrubs).","Use only a gentle cleanser, a barrier cream and a mineral sunscreen for 1 to 2 weeks.","Petrolatum or a cica balm can protect raw areas overnight."],redFlags:["Blistering or open skin","Burning after a chemical peel or bleaching product","Swelling of the eyes, lips or face"]},dryness:{label:"Dryness, tightness or flaking",steps:["Use a cream cleanser and moisturize within 3 minutes of washing.","Add a humectant (glycerin, hyaluronic acid) under a ceramide cream.","Pause exfoliating acids and retinoids until the flaking settles.","Use a humidifier if indoor air is dry."],redFlags:["Cracked or bleeding skin","Thick, scaly patches that do not respond to moisturizer"]},redness:{label:"Redness or flushing",steps:["Pare back to fragrance-free basics and a mineral sunscreen.","Try centella, azelaic acid or niacinamide (2 to 5%) once the skin is calm.","Note triggers: heat, spicy food, alcohol, sun and stress are common ones."],redFlags:["Redness that spreads, feels hot or comes with fever","Persistent facial flushing with bumps (possible rosacea)"]},darkSpots:{label:"New dark spots or patches",steps:["Wear SPF 30+ every day and reapply every 2 hours outdoors.","Use a gentle brightener such as azelaic acid, niacinamide or tranexamic acid.","Avoid picking spots or using harsh scrubs."],redFlags:["A mole or spot that is changing in size, shape or color, bleeding, or has irregular edges","Blue-grey or very dark patches after using lightening creams (possible ochronosis)"]},rash:{label:"Rash or bumps",steps:["Stop any new product and wash the area gently.","Use a bland moisturizer; avoid scratching.","Take a photo daily in the Progress tab so you can show a clinician how it changed."],redFlags:["Rash with fever, blistering, or peeling skin","Rash around the eyes, mouth or genitals","Rash that spreads quickly"]},swelling:{label:"Swelling",steps:["Stop the product you suspect and wash it off.","Apply a cool compress."],redFlags:["Swelling of the lips, tongue, eyes or throat, or any trouble breathing: seek emergency care now"],urgent:!0},sunburn:{label:"Sunburn",steps:["Cool the skin with a cool shower or damp cloth.","Apply aloe vera or a soothing, fragrance-free moisturizer.","Drink water and stay out of the sun; skip actives until healed."],redFlags:["Blistering over a large area","Fever, chills or dizziness"]},thinning:{label:"Thin, fragile skin or stretch marks on the face",steps:["This can follow long-term use of steroid creams. Do not keep using them unsupervised.","Protect the skin with a gentle barrier cream and mineral sunscreen.","See a doctor about how to stop steroid creams safely, since stopping abruptly can cause a flare."],redFlags:["Any thinning, easy bruising or stretch marks on the face"]}},oe={intro:"Skin that has been through bleaching or lightening products is often thinner, more sensitive and more prone to dark patches. The goal is to calm it, rebuild the barrier and protect it, before thinking about tone.",phases:[{name:"Phase 1: Calm (weeks 0 to 4)",steps:['Stop all lightening products, especially anything with mercury, unlabelled "whitening" creams, or strong steroids. If you have used a strong steroid cream for months, ask a doctor how to taper.',"Gentle, fragrance-free cleanser once or twice a day with lukewarm water.","Soothing serum or cream with centella asiatica, panthenol, allantoin or colloidal oatmeal.","Barrier cream with ceramides, cholesterol and fatty acids.","Mineral sunscreen (zinc oxide) SPF 30+ every morning, ideally tinted with iron oxides."]},{name:"Phase 2: Strengthen (weeks 4 to 12)",steps:["Keep phase 1 going.","Add niacinamide at 2 to 5% once a day to strengthen the barrier and gently even tone.","Add a humectant serum (glycerin, hyaluronic acid) under moisturizer.","Seal very dry or raw areas at night with a thin layer of petrolatum."]},{name:"Phase 3: Even tone gently (after week 12, only if skin is calm)",steps:["If uneven patches remain, patch-test a gentle option such as azelaic acid, tranexamic acid or licorice root, a few nights a week.","Avoid strong peels, high-strength acids and scrubs.","A dermatologist can check for ochronosis or steroid damage and offer treatments that are safe for your skin."]}],soothing:["Centella asiatica","Panthenol","Allantoin","Colloidal oatmeal","Bisabolol","Aloe vera","Beta-glucan","Green tea"],barrier:["Ceramides","Cholesterol","Fatty acids","Squalane","Glycerin","Hyaluronic acid","Niacinamide","Petrolatum","Sunflower seed oil"],avoid:["Mercury compounds","Hydroquinone (unless prescribed and supervised)","Topical corticosteroid (unless prescribed)","Fragrance","Essential oils","Alcohol denat.","Glycolic acid (high strength)","Kojic acid","Physical scrubs"],warningSigns:["Blue-grey or very dark patches on the cheeks or temples (possible exogenous ochronosis)","Thin, shiny or easily bruised skin, visible blood vessels or stretch marks on the face (possible steroid damage)","Severe flare of redness, burning or acne after stopping a cream (possible steroid withdrawal)","Tiredness, tremor, numbness or kidney problems after using unregulated creams (possible mercury exposure)"]},pe="DermaLogic gives general skin-care information and camera-based estimates. It is not a medical device and does not diagnose, treat or replace a dermatologist or doctor. If you have a painful, spreading, bleeding or changing skin problem, or signs of an allergic reaction, seek medical care.";var p=(e,t,n,a={})=>({name:e,aliases:t,tags:n,comedogenic:a.c??0,irritancy:a.i??0,benefit:a.b??"",caution:a.w??"",pregnancyCaution:!!a.preg}),se=[p("Glycerin",["glycerin","glycerine","glycerol"],["humectant","barrier"],{b:"Draws water into skin and supports the barrier."}),p("Hyaluronic acid",["hyaluronic acid","sodium hyaluronate","hydrolyzed hyaluronic acid","sodium hyaluronate crosspolymer"],["humectant"],{b:"Holds water in the upper skin for plumper, hydrated skin."}),p("Propanediol",["propanediol"],["humectant","solvent"],{b:"Light humectant and solvent."}),p("Butylene glycol",["butylene glycol"],["humectant","solvent"],{c:1,b:"Light humectant."}),p("Propylene glycol",["propylene glycol"],["humectant","solvent","allergen"],{i:1,b:"Humectant.",w:"Can sting or cause allergy in a small number of people."}),p("Urea",["urea"],["humectant","exfoliant-gentle","barrier"],{i:1,b:"Hydrates and softens rough, flaky skin.",w:"Higher strengths (10%+) can sting on broken skin."}),p("Sodium PCA",["sodium pca"],["humectant","barrier"],{b:"Part of skin's natural moisturizing factor."}),p("Betaine",["betaine"],["humectant","soothing"],{b:"Hydrating and calming."}),p("Aloe vera",["aloe barbadensis leaf juice","aloe barbadensis leaf extract","aloe vera","aloe barbadensis"],["soothing","humectant"],{b:"Calms and hydrates."}),p("Ceramides",["ceramide np","ceramide ap","ceramide eop","ceramide ns","ceramide eos","ceramide 1","ceramide 3","ceramide 6 ii","ceramides"],["barrier","emollient"],{b:"Rebuild the skin barrier lipids; key for damaged or sensitized skin."}),p("Cholesterol",["cholesterol"],["barrier","emollient"],{b:"Barrier lipid that works with ceramides and fatty acids."}),p("Phytosphingosine",["phytosphingosine"],["barrier","soothing"],{b:"Supports ceramide production and calms skin."}),p("Squalane",["squalane"],["emollient","barrier"],{c:1,b:"Lightweight, non-greasy emollient."}),p("Squalene",["squalene"],["emollient"],{c:3,b:"Emollient.",w:"Can oxidize and clog pores in acne-prone skin (squalane is the stable form)."}),p("Petrolatum",["petrolatum","petroleum jelly","white petrolatum"],["occlusive","barrier"],{c:0,b:"Very effective at sealing in moisture and protecting healing skin.",w:"Feels heavy; fine for most, but some acne-prone users prefer lighter textures."}),p("Dimethicone",["dimethicone","dimethiconol"],["occlusive","emollient"],{c:1,b:"Smooths skin and reduces water loss without much greasiness."}),p("Cyclopentasiloxane",["cyclopentasiloxane","cyclomethicone"],["emollient"],{b:"Evaporating silicone that gives a silky feel."}),p("Shea butter",["butyrospermum parkii butter","butyrospermum parkii (shea) butter","shea butter","vitellaria paradoxa butter"],["emollient","occlusive","barrier"],{c:1,b:"Rich emollient for dry skin.",w:"Can feel heavy on very oily skin."}),p("Cocoa butter",["theobroma cacao seed butter","theobroma cacao (cocoa) seed butter","cocoa butter"],["emollient","occlusive"],{c:4,b:"Rich emollient.",w:"Highly comedogenic; a common cause of facial breakouts."}),p("Coconut oil",["cocos nucifera oil","cocos nucifera (coconut) oil","coconut oil"],["emollient","occlusive"],{c:4,b:"Emollient for body skin.",w:"Highly comedogenic on the face."}),p("Isopropyl myristate",["isopropyl myristate"],["emollient"],{c:5,i:1,w:"One of the most pore-clogging emollients."}),p("Isopropyl palmitate",["isopropyl palmitate"],["emollient"],{c:4,w:"Commonly clogs pores in acne-prone skin."}),p("Isopropyl isostearate",["isopropyl isostearate"],["emollient"],{c:5,w:"Highly comedogenic."}),p("Myristyl myristate",["myristyl myristate"],["emollient"],{c:5,w:"Highly comedogenic."}),p("Laureth-4",["laureth-4"],["emulsifier"],{c:5,w:"Highly comedogenic emulsifier."}),p("Acetylated lanolin",["acetylated lanolin","acetylated lanolin alcohol"],["emollient","allergen"],{c:4,w:"Comedogenic and a known contact allergen."}),p("Lanolin",["lanolin","lanolin alcohol","lanolin oil"],["emollient","occlusive","allergen"],{c:2,b:"Strong moisturizer.",w:"A known contact allergen for some people."}),p("Wheat germ oil",["triticum vulgare germ oil","triticum vulgare (wheat) germ oil","wheat germ oil"],["emollient"],{c:5,w:"Highly comedogenic."}),p("Algae extract",["algae extract","chlorella vulgaris extract","laminaria digitata extract"],["emollient"],{c:4,w:"Some algae extracts are strongly comedogenic."}),p("Sodium lauryl sulfate",["sodium lauryl sulfate","sls"],["surfactant-harsh"],{c:3,i:3,w:"Harsh cleanser that strips the barrier and irritates."}),p("Jojoba oil",["simmondsia chinensis seed oil","simmondsia chinensis (jojoba) seed oil","jojoba oil"],["emollient"],{c:2,b:"Light, skin-like oil."}),p("Argan oil",["argania spinosa kernel oil","argan oil"],["emollient"],{c:0,b:"Nourishing, low pore-clogging oil."}),p("Rosehip oil",["rosa canina fruit oil","rosa rubiginosa seed oil","rosehip oil"],["emollient","antioxidant"],{c:1,b:"Rich in fatty acids; can help with marks."}),p("Sunflower seed oil",["helianthus annuus seed oil","helianthus annuus (sunflower) seed oil","sunflower seed oil"],["emollient","barrier"],{c:0,b:"Linoleic-acid-rich oil that supports the barrier."}),p("Mineral oil",["paraffinum liquidum","mineral oil"],["occlusive"],{c:0,b:"Inert, non-irritating occlusive."}),p("Caprylic/capric triglyceride",["caprylic/capric triglyceride","caprylic capric triglyceride"],["emollient"],{c:1,b:"Light emollient from coconut, generally non-clogging."}),p("Cetearyl alcohol",["cetearyl alcohol","cetyl alcohol","stearyl alcohol"],["emollient","emulsifier"],{c:2,b:"Fatty alcohol that softens skin (not drying, unlike alcohol denat)."}),p("Fatty acids",["linoleic acid","stearic acid","palmitic acid","oleic acid"],["emollient","barrier"],{c:2,b:"Barrier lipids.",w:"Oleic acid can be pore-clogging for some."}),p("Centella asiatica",["centella asiatica extract","centella asiatica leaf extract","centella asiatica","cica","madecassoside","asiaticoside","asiatic acid","madecassic acid"],["soothing","barrier"],{b:"Calms irritation and supports wound healing."}),p("Panthenol",["panthenol","d-panthenol","dexpanthenol","pro-vitamin b5"],["soothing","humectant","barrier"],{b:"Pro-vitamin B5; soothes and helps barrier repair."}),p("Allantoin",["allantoin"],["soothing"],{b:"Calms and softens irritated skin."}),p("Colloidal oatmeal",["avena sativa kernel flour","avena sativa (oat) kernel flour","colloidal oatmeal","avena sativa kernel extract"],["soothing","barrier"],{b:"Relieves itching and irritation."}),p("Bisabolol",["bisabolol","alpha-bisabolol"],["soothing"],{b:"Chamomile-derived calming ingredient."}),p("Green tea",["camellia sinensis leaf extract","green tea extract"],["soothing","antioxidant"],{b:"Antioxidant and anti-redness."}),p("Licorice root",["glycyrrhiza glabra root extract","dipotassium glycyrrhizate","licorice root extract"],["soothing","brightening"],{b:"Calms redness and gently evens tone."}),p("Zinc PCA",["zinc pca"],["oil-control","soothing"],{b:"Helps regulate oil."}),p("Beta-glucan",["beta-glucan","sodium beta-glucan"],["soothing","humectant"],{b:"Calming and hydrating."}),p("Mugwort",["artemisia vulgaris extract","artemisia capillaris extract"],["soothing"],{b:"Calming botanical."}),p("Niacinamide",["niacinamide","nicotinamide","vitamin b3"],["brightening","barrier","oil-control","anti-acne"],{i:1,b:"Evens tone, strengthens barrier, regulates oil.",w:"High strengths (10%+) can cause flushing in some."}),p("Azelaic acid",["azelaic acid","potassium azeloyl diglycinate"],["brightening","anti-acne","soothing"],{i:1,b:"Fades dark marks, calms acne and rosacea; safe in pregnancy."}),p("Tranexamic acid",["tranexamic acid"],["brightening"],{b:"Targets stubborn hyperpigmentation and melasma with low irritation."}),p("Alpha arbutin",["alpha-arbutin","alpha arbutin","arbutin"],["brightening"],{b:"Gentle tyrosinase inhibitor for dark spots."}),p("Kojic acid",["kojic acid","kojic dipalmitate"],["brightening"],{i:2,b:"Fades dark spots.",w:"Can irritate or cause allergy; avoid on a damaged barrier."}),p("Vitamin C (ascorbic acid)",["ascorbic acid","l-ascorbic acid"],["brightening","antioxidant"],{i:2,b:"Antioxidant that brightens and protects.",w:"Low pH can sting on sensitive or compromised skin."}),p("Vitamin C derivatives",["ascorbyl glucoside","sodium ascorbyl phosphate","magnesium ascorbyl phosphate","3-o-ethyl ascorbic acid","ethyl ascorbic acid","tetrahexyldecyl ascorbate","ascorbyl tetraisopalmitate"],["brightening","antioxidant"],{i:1,b:"Gentler forms of vitamin C."}),p("Hydroquinone",["hydroquinone"],["bleaching","brightening"],{i:2,preg:!0,b:"Prescription-strength depigmenting agent.",w:"Should only be used short-term under medical supervision; long-term use can cause ochronosis (blue-black darkening)."}),p("Mercury compounds",["mercury","mercurous chloride","calomel","ammoniated mercury","mercuric","mercurio","hydrargyri"],["bleaching","toxic"],{i:3,preg:!0,w:"Toxic. Banned in cosmetics in most countries; can damage kidneys and nerves. Stop and see a doctor."}),p("Topical corticosteroid",["clobetasol propionate","clobetasol","betamethasone","betamethasone valerate","betamethasone dipropionate","hydrocortisone","dexamethasone","fluocinolone acetonide","mometasone furoate"],["steroid"],{i:2,w:"Steroid. Unsupervised long-term facial use thins skin and causes acne, stretch marks and rebound redness. Do not stop high-strength use abruptly without medical advice."}),p("Glutathione",["glutathione"],["brightening","antioxidant"],{b:"Antioxidant.",w:"Topical effect on tone is modest; injectable glutathione for lightening carries real risks."}),p("Glycolic acid",["glycolic acid"],["exfoliant","aha"],{i:2,b:"AHA that smooths texture and fades marks.",w:"Can irritate and increases sun sensitivity."}),p("Lactic acid",["lactic acid"],["exfoliant","aha","humectant"],{i:1,b:"Gentler AHA that also hydrates."}),p("Mandelic acid",["mandelic acid"],["exfoliant","aha"],{i:1,b:"Gentle AHA; good for darker skin tones prone to marks."}),p("Salicylic acid",["salicylic acid","betaine salicylate","willow bark extract","salix alba bark extract"],["exfoliant","bha","anti-acne"],{i:2,preg:!0,b:"Oil-soluble exfoliant that clears pores.",w:"Can dry skin; avoid high-strength peels in pregnancy."}),p("Gluconolactone (PHA)",["gluconolactone","lactobionic acid"],["exfoliant","humectant"],{i:0,b:"Very gentle exfoliant suitable for sensitive skin."}),p("Retinol",["retinol","retinyl palmitate","retinyl acetate","retinal","retinaldehyde","hydroxypinacolone retinoate","retinyl retinoate"],["retinoid","anti-acne","anti-aging"],{i:2,preg:!0,b:"Speeds cell turnover; helps acne, texture, marks and fine lines.",w:"Start slowly; causes dryness and peeling at first. Avoid in pregnancy."}),p("Tretinoin / adapalene",["tretinoin","adapalene","tazarotene","retinoic acid"],["retinoid","anti-acne","anti-aging"],{i:3,preg:!0,b:"Prescription-strength retinoid.",w:"Expect an adjustment period; avoid in pregnancy."}),p("Bakuchiol",["bakuchiol"],["anti-aging","antioxidant"],{b:"Plant-based retinol alternative, gentler and pregnancy-friendly."}),p("Benzoyl peroxide",["benzoyl peroxide"],["anti-acne"],{i:2,b:"Kills acne bacteria.",w:"Drying; bleaches fabric."}),p("Sulfur",["sulfur","sulphur"],["anti-acne"],{i:1,b:"Gentle acne spot treatment."}),p("Tea tree oil",["melaleuca alternifolia leaf oil","melaleuca alternifolia (tea tree) leaf oil","tea tree oil"],["anti-acne","essential-oil"],{i:2,b:"Mild antibacterial.",w:"Essential oil; can irritate or sensitize, especially undiluted."}),p("Vitamin E",["tocopherol","tocopheryl acetate","vitamin e"],["antioxidant"],{c:2,b:"Antioxidant that stabilizes formulas."}),p("Peptides",["palmitoyl tripeptide-1","palmitoyl tetrapeptide-7","acetyl hexapeptide-8","copper tripeptide-1","palmitoyl pentapeptide-4","matrixyl"],["anti-aging","barrier"],{b:"Support firmness and repair."}),p("Ferulic acid",["ferulic acid"],["antioxidant"],{b:"Boosts antioxidant protection."}),p("Resveratrol",["resveratrol"],["antioxidant"],{b:"Antioxidant."}),p("Caffeine",["caffeine"],["antioxidant"],{b:"May reduce puffiness."}),p("Zinc oxide",["zinc oxide"],["sunscreen","soothing"],{b:"Broad-spectrum mineral sunscreen; gentle on sensitive skin."}),p("Titanium dioxide",["titanium dioxide","ci 77891"],["sunscreen"],{b:"Mineral UV filter."}),p("Iron oxides",["iron oxides","ci 77491","ci 77492","ci 77499"],["sunscreen-visible"],{b:"Tint that blocks visible light, which helps prevent dark patches on deeper skin tones."}),p("Chemical UV filters",["avobenzone","butyl methoxydibenzoylmethane","octinoxate","ethylhexyl methoxycinnamate","octocrylene","homosalate","octisalate","ethylhexyl salicylate","bemotrizinol","bis-ethylhexyloxyphenol methoxyphenyl triazine","tinosorb s","tinosorb m","uvinul a plus","diethylamino hydroxybenzoyl hexyl benzoate","ethylhexyl triazone","oxybenzone","benzophenone-3"],["sunscreen"],{i:1,b:"UV filters.",w:"Some (e.g. oxybenzone, octocrylene) can sting sensitive eyes or skin."}),p("Fragrance",["fragrance","parfum","perfume","aroma"],["fragrance","allergen"],{i:2,w:"The most common cause of cosmetic allergy and irritation."}),p("Fragrance allergens",["limonene","linalool","citronellol","geraniol","citral","eugenol","coumarin","benzyl alcohol","benzyl benzoate","benzyl salicylate","hexyl cinnamal","cinnamal","farnesol","hydroxycitronellal","isoeugenol","alpha-isomethyl ionone","butylphenyl methylpropional"],["fragrance","allergen"],{i:2,w:"Fragrance components that are regulated allergens."}),p("Essential oils",["lavandula angustifolia oil","lavender oil","citrus limon peel oil","lemon oil","citrus aurantium dulcis peel oil","orange peel oil","mentha piperita oil","peppermint oil","eucalyptus globulus leaf oil","rosmarinus officinalis leaf oil","citrus aurantium bergamia fruit oil","bergamot oil","cinnamomum zeylanicum bark oil","menthol"],["essential-oil","fragrance","allergen"],{i:2,w:"Essential oils can irritate and sensitize; citrus oils can cause sun reactions."}),p("Alcohol denat.",["alcohol denat","alcohol denat.","denatured alcohol","sd alcohol","sd alcohol 40","ethanol","alcohol","isopropyl alcohol"],["drying-alcohol"],{i:2,w:"Drying and irritating when high in the list."}),p("Methylisothiazolinone",["methylisothiazolinone","methylchloroisothiazolinone","mit","mci"],["preservative","allergen"],{i:3,w:"A strong contact allergen."}),p("Formaldehyde releasers",["dmdm hydantoin","quaternium-15","imidazolidinyl urea","diazolidinyl urea","bronopol","2-bromo-2-nitropropane-1,3-diol","sodium hydroxymethylglycinate"],["preservative","allergen"],{i:2,w:"Release small amounts of formaldehyde; common allergens."}),p("Phenoxyethanol",["phenoxyethanol"],["preservative"],{b:"Common, well-tolerated preservative."}),p("Parabens",["methylparaben","propylparaben","ethylparaben","butylparaben"],["preservative"],{b:"Effective preservatives with low allergy rates."}),p("Ethylhexylglycerin",["ethylhexylglycerin"],["preservative"],{b:"Preservative booster and skin conditioner."}),p("Sodium benzoate",["sodium benzoate","potassium sorbate"],["preservative"],{b:"Gentle preservative."}),p("Cocamidopropyl betaine",["cocamidopropyl betaine"],["surfactant","allergen"],{i:1,b:"Mild cleanser.",w:"Occasional allergen."}),p("Sodium laureth sulfate",["sodium laureth sulfate","sles","ammonium lauryl sulfate"],["surfactant-harsh"],{i:2,w:"Stronger cleanser that can dry sensitive skin."}),p("Gentle surfactants",["sodium cocoyl isethionate","coco-glucoside","decyl glucoside","lauryl glucoside","sodium lauroyl methyl isethionate","disodium cocoyl glutamate","sodium cocoyl glycinate"],["surfactant"],{b:"Mild cleansing agents."}),p("Witch hazel",["hamamelis virginiana water","hamamelis virginiana (witch hazel) water","hamamelis virginiana extract","witch hazel"],["astringent"],{i:1,w:"Astringent; often drying, and many versions contain alcohol."}),p("Propolis",["propolis extract","propolis"],["soothing","allergen"],{b:"Soothing, antibacterial.",w:"A known allergen for people allergic to bee products."}),p("Snail mucin",["snail secretion filtrate"],["humectant","soothing"],{b:"Hydrating and repairing."}),p("Water",["water","aqua","eau","aqua/water/eau","water/aqua/eau","purified water"],["base"],{}),p("Xanthan gum",["xanthan gum","carbomer","acrylates/c10-30 alkyl acrylate crosspolymer","hydroxyethylcellulose"],["texture"],{}),p("pH adjusters",["sodium hydroxide","citric acid","triethanolamine","tromethamine","arginine"],["ph"],{}),p("Chelators",["disodium edta","tetrasodium edta","sodium phytate"],["chelator"],{})],et=["phenoxyethanol","fragrance","parfum","xanthan gum","carbomer","disodium edta","ethylhexylglycerin","sodium benzoate","potassium sorbate"];var K=new Map;for(let e of se)for(let t of e.aliases)K.set(re(t),e);var Yt=new Set(["alcohol","water","aqua","eau","mit","mci","sls","sles"]),_t=[...K.keys()].filter(e=>!Yt.has(e)).sort((e,t)=>t.length-e.length),Re={worked:"It worked well","no-change":"No noticeable change",breakout:"It broke me out",irritation:"It irritated, stung or burned",allergy:"Allergic reaction (rash, hives, swelling)",dryness:"It dried my skin out"};function re(e){return String(e).toLowerCase().replace(/\*/g,"").replace(/\s+/g," ").replace(/[.\s]+$/,"").trim()}function Wt(e){if(!e)return[];let t=String(e).replace(/^\s*(ingredients|ingrédients|inci)\s*[:\-]\s*/i,"").replace(/\(\s*and\s*\)/gi,",").replace(/[\n;•·|]/g,",");return t=t.replace(/[\[(]?\s*\+\/-|may contain\s*:?/gi,","),t.split(",").map(n=>re(n.replace(/[\[\]]/g,"").replace(/^\d+(\.\d+)?\s*%\s*/,""))).filter(n=>n&&n.length>1)}function nt(e){let t=re(e);if(K.has(t))return K.get(t);let n=t.replace(/\s*\([^)]*\)\s*/g," ").replace(/\s+/g," ").trim();if(K.has(n))return K.get(n);for(let a of _t){if(a.length<4)continue;if(new RegExp(`(^|[^a-z])${Vt(a)}([^a-z]|$)`).test(t))return K.get(a)}return null}function Vt(e){return e.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}function Kt(e,t){return e<5?"high":t===-1||e<t?"medium":"low"}function at(e){let t=Wt(e),n=t.findIndex(o=>et.includes(o)),a=t.map((o,s)=>{let i=nt(o);return{raw:o,index:s,ing:i,band:Kt(s,n)}});return{list:t,items:a,onePercentIndex:n}}var E=(e,t)=>e.ing&&e.ing.tags.includes(t),q=e=>e.ing?e.ing.name:e.raw,tt={high:"near the top of the list (higher amount)",medium:"in the middle of the list",low:"low in the list (small amount)"};function j(e){let t=new Set;return e.filter(n=>{let a=n.ing?n.ing.name:n.raw;return t.has(a)?!1:(t.add(a),!0)})}function je(e,t={}){let{items:n}=at(e.ingredients),a=n.filter(g=>g.ing),o=n.filter(g=>!g.ing).map(g=>g.raw),s=[],i=[],r=[],l=e.outcome,c=Number(e.weeksUsed)||0,h=t.skinType==="sensitive"||t.sensitive||t.bleachingHistory,m=j(a.filter(g=>g.ing.comedogenic>=3&&g.band!=="low")),d=j(a.filter(g=>g.ing.irritancy>=2&&!(g.band==="low"&&g.ing.irritancy<3))),b=j(a.filter(g=>E(g,"fragrance")||E(g,"essential-oil"))),f=j(a.filter(g=>E(g,"allergen"))),v=j(a.filter(g=>["retinoid","aha","bha","exfoliant","anti-acne","brightening"].some(x=>E(g,x)))),T=v.filter(g=>E(g,"retinoid")||E(g,"aha")||E(g,"bha")),$=j(a.filter(g=>E(g,"drying-alcohol")&&g.index<6||E(g,"surfactant-harsh")||E(g,"astringent"))),z=j(a.filter(g=>E(g,"soothing")||E(g,"barrier"))),w=j(a.filter(g=>E(g,"toxic")||E(g,"steroid")||g.ing.name==="Hydroquinone")),k=[];for(let g of t.concerns||[]){let x=N[g]?.helps||[];for(let A of a)x.includes(A.ing.name)&&k.push({item:A,concern:N[g].label})}for(let g of w)r.push(`${q(g)}: ${g.ing.caution}`);if(l==="breakout"){T.length&&c<=6&&s.push(`It contains ${T.map(q).join(", ")}, which speed up skin turnover. Breakouts in your usual spots during the first 4 to 6 weeks can be "purging" and often settle. Breakouts in new places, or lasting past 6 weeks, point to a real reaction.`);for(let x of m)s.push(`${q(x)} is rated ${x.ing.comedogenic}/5 for clogging pores and sits ${tt[x.band]}. ${x.ing.caution}`.trim());let g=j(a.filter(x=>E(x,"occlusive")&&x.index<6&&x.ing.comedogenic>=1));g.length&&["oily","combination"].includes(t.skinType)&&s.push(`Rich occlusives (${g.map(q).join(", ")}) high in the formula can feel too heavy for ${t.skinType} skin and trap oil.`),b.length&&s.push(`Fragrance or essential oils (${b.map(q).join(", ")}) can inflame skin and trigger bumps that look like acne.`),w.some(x=>E(x,"steroid"))&&s.push('Steroid creams commonly cause "steroid acne": many small, even-sized bumps.')}if(l==="irritation"||l==="dryness"){for(let g of d)s.push(`${q(g)} is a common irritant (${g.ing.irritancy}/3), ${tt[g.band]}. ${g.ing.caution}`.trim());for(let g of $)d.includes(g)||s.push(`${q(g)} can strip natural oils and leave skin dry or tight.`);T.length>1&&s.push(`It combines several strong actives (${T.map(q).join(", ")}), which raises the chance of irritation.`),h&&v.length&&s.push("Your profile notes sensitive or previously bleached skin, which reacts more easily to actives. Rebuild the barrier first and reintroduce actives slowly.")}if(l==="allergy"&&(f.length?s.push(`It contains known contact allergens: ${f.map(q).join(", ")}. A dermatologist can patch-test to confirm which one.`):s.push("No common allergens from our list were found. Allergies can be caused by any ingredient, including botanical extracts we could not identify."),r.push("Swelling of the lips, eyes or throat, or trouble breathing, needs emergency care.")),l==="worked"){for(let g of j(k.map(x=>x.item))){let x=k.filter(A=>A.item===g).map(A=>A.concern.toLowerCase());i.push(`${q(g)} targets ${[...new Set(x)].join(" and ")}. ${g.ing.benefit}`)}for(let g of z.slice(0,4))k.some(x=>x.item.ing===g.ing)||i.push(`${q(g)}: ${g.ing.benefit}`);b.length||i.push("It is free of fragrance and essential oils, so there is less to irritate your skin."),m.length||i.push("No high pore-clogging ingredients were found in meaningful amounts."),i.length||i.push("We could not pin down a single hero ingredient; the overall formula suits your skin. Keep it.")}if(l==="no-change"){v.length||s.push("It has no strong active ingredients for treating a concern, so it mainly moisturizes or cleanses.");let g=v.filter(x=>x.band==="low");g.length&&s.push(`${g.map(q).join(", ")} appear low in the list, so the amount may be too small to make a visible difference.`),c&&c<8&&s.push(`You used it for ${c} week${c===1?"":"s"}. Most actives need 8 to 12 weeks (pigment and retinoids up to 12 to 24) to show results.`),v.length&&!k.length&&(t.concerns||[]).length&&s.push(`Its actives (${v.map(q).join(", ")}) do not directly target your main concerns.`)}if(!s.length&&l!=="worked"&&s.push("Nothing in our ingredient list stands out as a likely cause. It may be the combination with other products, the texture, how often it was used, or an ingredient we could not identify."),t.pregnant){let g=j(a.filter(x=>x.ing.pregnancyCaution));g.length&&r.push(`Pregnancy: ask your doctor before using ${g.map(q).join(", ")}.`)}if(t.bleachingHistory&&l!=="worked"){let g=j(a.filter(x=>E(x,"bleaching")||E(x,"aha")||E(x,"fragrance")&&x.band!=="low"));g.length&&r.push(`With a history of bleaching, avoid ${g.map(q).join(", ")} for now and focus on soothing and barrier repair.`)}return{matched:j(a).map(g=>({name:g.ing.name,raw:g.raw,band:g.band,tags:g.ing.tags})),unknown:o,reasons:s,good:i,watch:[...new Set(r)]}}function it(e){let t=new Set(["breakout","irritation","allergy","dryness"]),n=new Map;for(let o of e){let s=new Set(at(o.ingredients).items.filter(i=>i.ing&&!["base","texture","ph","chelator"].some(r=>i.ing.tags.includes(r))).map(i=>i.ing.name));for(let i of s){let r=n.get(i)||{name:i,bad:0,good:0,products:[]};t.has(o.outcome)&&r.bad++,o.outcome==="worked"&&r.good++,r.products.push(o.name),n.set(i,r)}}let a=[...n.values()];return{suspects:a.filter(o=>o.bad>=2&&o.good===0).sort((o,s)=>s.bad-o.bad),friends:a.filter(o=>o.good>=2&&o.bad===0).sort((o,s)=>s.good-o.good)}}function le(e){let t=nt(e);if(t)return t;let n=re(e);return se.find(a=>re(a.name).includes(n))||null}var ot=new Map(se.map(e=>[e.name,e])),Oe=e=>e.charAt(0).toUpperCase()+e.slice(1),st=new Set(["Retinol","Tretinoin / adapalene","Glycolic acid","Salicylic acid","Lactic acid","Mandelic acid","Benzoyl peroxide"]);function Jt(e={},t=null){let n=new Map;for(let a of e.concerns||[])n.set(a,Math.max(n.get(a)||0,70));if(t?.concerns)for(let[a,o]of Object.entries(t.concerns))o.level!=="low"&&N[a]&&n.set(a,Math.max(n.get(a)||0,o.score));return e.skinType==="dry"&&!n.has("dryness")&&n.set("dryness",40),e.skinType==="oily"&&!n.has("oiliness")&&n.set("oiliness",40),[...n.entries()].sort((a,o)=>o[1]-a[1]).map(([a])=>a)}function Xt(e,{pregnant:t,gentle:n}){let a=[];for(let o of e)for(let s of N[o]?.helps||[]){let i=ot.get(s);i&&(t&&i.pregnancyCaution||n&&(i.irritancy>=2||st.has(s))||a.find(r=>r.name===s)||a.push({name:s,reason:N[o].label,benefit:i.benefit}))}return a}function te(e={},t=null){let n=V[e.skinType]||V.normal,a=Jt(e,t),o=!!e.bleachingHistory,s=o||e.skinType==="sensitive",i=!!e.pregnant,r=o?["Centella asiatica","Panthenol","Ceramides","Glycerin","Niacinamide","Zinc oxide"].map($=>({name:$,reason:$==="Zinc oxide"?"Sun protection":"Barrier repair and soothing",benefit:ot.get($).benefit})):Xt(a,{pregnant:i,gentle:s}).slice(0,6),l=[],c=new Set,h=r.find($=>["Niacinamide","Vitamin C derivatives","Azelaic acid","Tranexamic acid","Alpha arbutin","Centella asiatica","Hyaluronic acid","Zinc PCA","Caffeine","Licorice root","Green tea","Panthenol"].includes($.name)),m=o?null:r.find($=>$!==h)||null,d=[{step:"Cleanse",detail:s?"Rinse with lukewarm water or use a fragrance-free gentle cleanser.":`Use a ${n.cleanser}.`}];h&&d.push({step:"Treat",detail:`Serum with ${h.name.toLowerCase()} for ${h.reason.toLowerCase()}.`}),d.push({step:"Moisturize",detail:Oe(s?V.sensitive.moisturizer:n.moisturizer)}),d.push({step:"Protect",detail:o||a.includes("hyperpigmentation")?"Mineral or tinted sunscreen SPF 30+ with iron oxides; reapply every 2 hours outdoors.":`${Oe(n.sunscreen)}; reapply every 2 hours outdoors.`});let b=[{step:"Cleanse",detail:`Use a ${s?V.sensitive.cleanser:n.cleanser}. Double cleanse if you wore sunscreen or makeup.`}];if(m){let $=st.has(m.name);b.push({step:"Treat",detail:`${m.name} for ${m.reason.toLowerCase()}${$?", starting 2 nights a week and building up slowly":""}.`}),$&&l.push(`Do not use ${m.name.toLowerCase()} on the same night as other exfoliating acids or retinoids.`)}b.push({step:"Moisturize",detail:e.skinType==="dry"||o?"Richer barrier cream with ceramides; seal dry patches with petrolatum.":Oe(n.moisturizer)});let f=[];!s&&(a.includes("texture")||a.includes("acne")||a.includes("oiliness"))&&f.push("Gentle chemical exfoliant (mandelic or lactic acid) 1 to 2 times a week on nights without other actives."),(a.includes("dryness")||o)&&f.push("Hydrating, fragrance-free sheet mask or overnight mask once or twice a week."),e.skinType==="sensitive"&&["Fragrance","Essential oils","Alcohol denat."].forEach($=>c.add($)),a.includes("acne")&&["Coconut oil","Cocoa butter","Isopropyl myristate"].forEach($=>c.add($)),i&&(["Retinol","Tretinoin / adapalene","Hydroquinone","High-strength salicylic acid peels"].forEach($=>c.add($)),l.push("Pregnancy: azelaic acid, niacinamide, vitamin C and mineral sunscreen are generally considered safe options. Check with your doctor."));let v=null;o&&(oe.avoid.forEach($=>c.add($)),v={...oe,personal:Zt(e)},l.unshift("Because you have a history of skin bleaching, your routine focuses on soothing and repairing the barrier first. Strong actives and tone-evening treatments are left out on purpose until your skin is calm (see phase 3 below)."));let T=Qe[e.bodyType]||[];return t?.confidence==="low"&&l.push("Your last scan had poor lighting, so its results were given less weight. Try rescanning in daylight."),{skinType:n.label,concerns:a.map($=>({id:$,label:N[$].label,tips:N[$].tips})),keyIngredients:r,am:d,pm:b,weekly:f,avoid:[...c],notes:l,body:T,bleachingPlan:v}}function Zt(e){let t=[],n=e.bleachingProducts||[];return(n.includes("mercury")||n.includes("unknown"))&&t.push('Unlabelled or imported "whitening" creams sometimes contain mercury. If you used them for a long time, ask a doctor about a simple blood or urine test.'),n.includes("steroid")&&t.push("Steroid creams (such as clobetasol or betamethasone) used on the face for a long time can thin the skin. If you are still using one, do not stop suddenly: a doctor can help you taper it to avoid a flare."),n.includes("hydroquinone")&&t.push("Long-term hydroquinone can cause ochronosis, a blue-black darkening that gets worse with more hydroquinone. Stop using it and see a dermatologist if you notice this."),n.includes("injections")&&t.push("Glutathione injections or drips for lightening are not proven safe. Talk to a doctor if you had side effects."),e.bleachingStopped==="current"?t.push("You are still using lightening products. Stopping them is the first step to letting your skin recover."):e.bleachingStopped==="<3m"&&t.push("You stopped recently. Skin often looks blotchy or darker for a few months while it recovers; that is expected, and sunscreen helps a lot."),t}function Qt(e,t,n){let a=f=>(f/=255,f<=.04045?f/12.92:Math.pow((f+.055)/1.055,2.4)),o=a(e),s=a(t),i=a(n),r=(o*.4124+s*.3576+i*.1805)/.95047,l=o*.2126+s*.7152+i*.0722,c=(o*.0193+s*.1192+i*.9505)/1.08883,h=f=>f>.008856?Math.cbrt(f):7.787*f+16/116,m=h(r),d=h(l),b=h(c);return[116*d-16,500*(m-d),200*(d-b)]}function en(e,t,n){let a=.299*e+.587*t+.114*n,o=128-.168736*e-.331264*t+.5*n,s=128+.5*e-.418688*t-.081312*n;return a>25&&o>=77&&o<=135&&s>=130&&s<=180&&e>n}function tn(e,t){return Math.atan2(e-50,t)*180/Math.PI}var nn=[{min:55,label:"Very light",fitz:"I"},{min:41,label:"Light",fitz:"II"},{min:28,label:"Intermediate / medium",fitz:"III"},{min:10,label:"Tan / olive",fitz:"IV"},{min:-30,label:"Brown",fitz:"V"},{min:-1/0,label:"Deep / dark brown",fitz:"VI"}];function an(e){return nn.find(t=>e>t.min)}function on(e,t){let n=Math.atan2(t,e)*180/Math.PI;return n<50?{label:"Cool (pink / red)",hue:n}:n<=62?{label:"Neutral",hue:n}:{label:"Warm (golden / yellow)",hue:n}}var F=e=>{if(!e.length)return 0;let t=Float64Array.from(e).sort(),n=t.length>>1;return t.length%2?t[n]:(t[n-1]+t[n])/2},rt=e=>e.length?e.reduce((t,n)=>t+n,0)/e.length:0,sn=e=>{let t=rt(e);return Math.sqrt(rt(e.map(n=>(n-t)**2)))},ne=(e,t=0,n=100)=>Math.max(t,Math.min(n,e));function lt(e,{keepAll:t=!1}={}){let n=[],a=[];for(let o=0;o<e.length;o+=4){let s=e[o],i=e[o+1],r=e[o+2],l=Qt(s,i,r);a.push(l),en(s,i,r)&&n.push(l)}return t?a:n.length>=a.length*.25?n:a}function rn(e){return e<30?"low":e<60?"moderate":"noticeable"}function ct(e){let t=[...e.leftCheek||[],...e.rightCheek||[]],n=e.forehead||[],a=[...t,...n],o=[...a,...e.nose||[],...e.chin||[]];if(a.length<20)throw new Error("Not enough skin was visible to analyze. Try a clearer, front-facing photo.");let s=a.map(S=>S[0]),i=F(s),r=a.filter(S=>Math.abs(S[0]-i)<15),l=F(r.map(S=>S[0])),c=F(r.map(S=>S[1])),h=F(r.map(S=>S[2])),m=tn(l,h),d=an(m),b=on(c,h),f=[];l<22&&f.push("The photo looks dark. Face a window or a soft light for better accuracy."),l>88&&f.push("The photo looks overexposed. Move away from direct light.");let v=F((e.leftCheek||[]).map(S=>S[0])),T=F((e.rightCheek||[]).map(S=>S[0]));e.leftCheek?.length&&e.rightCheek?.length&&Math.abs(v-T)>12&&f.push("One side of your face is much brighter than the other. Even lighting gives more reliable results.");let z=[...t,...e.nose||[]].map(S=>S[1]),w=F(z),k=z.filter(S=>S>w+7).length/Math.max(1,z.length),g=ne((w-13)*5+k*250),x=o.filter(S=>S[0]<i+20).map(S=>S[0]),A=F(x),Q=sn(x),Ee=x.filter(S=>S<A-9).length/Math.max(1,x.length),Pt=ne((Q-3.5)*9+Ee*220),Ge=[...n,...e.nose||[]],Rt=Ge.filter(S=>S[0]>A+16&&Math.hypot(S[1],S[2])<22).length/Math.max(1,Ge.length),jt=ne(Rt*700),Me=[...t,...e.chin||[]],Ot=F(Me.map(S=>S[1])),Ft=Me.filter(S=>S[1]>Ot+11).length/Math.max(1,Me.length),Ht=ne(Ft*900),Ye=[...e.underEyeLeft||[],...e.underEyeRight||[]],Ie=null;if(Ye.length>10&&t.length){let S=F(t.map(ze=>ze[0]))-F(Ye.map(ze=>ze[0]));Ie=ne((S-3)*7)}let De={redness:{label:"Redness",score:Math.round(g)},hyperpigmentation:{label:"Uneven tone / dark spots",score:Math.round(Pt)},oiliness:{label:"Shine / oiliness",score:Math.round(jt)},acne:{label:"Blemishes / red spots",score:Math.round(Ht)}};Ie!==null&&(De.darkCircles={label:"Dark circles",score:Math.round(Ie)});for(let S of Object.values(De))S.level=rn(S.score);return{tone:{ita:Math.round(m*10)/10,category:d.label,fitzpatrickApprox:d.fitz,undertone:b.label,lab:[l,c,h].map(S=>Math.round(S*10)/10),hex:ln(l,c,h)},concerns:De,warnings:f,confidence:f.length?"low":"medium"}}function ln(e,t,n){let a=(e+16)/116,o=a+t/500,s=a-n/200,i=f=>f**3>.008856?f**3:(f-16/116)/7.787,r=i(o)*.95047,l=i(a),c=i(s)*1.08883,h=r*3.2406+l*-1.5372+c*-.4986,m=r*-.9689+l*1.8758+c*.0415,d=r*.0557+l*-.204+c*1.057,b=f=>Math.round(255*ne(f<=.0031308?12.92*f:1.055*Math.pow(f,1/2.4)-.055,0,1));return"#"+[h,m,d].map(f=>b(f).toString(16).padStart(2,"0")).join("")}var cn={forehead:[.3,.06,.4,.14],underEyeLeft:[.2,.42,.2,.07],underEyeRight:[.6,.42,.2,.07],leftCheek:[.14,.52,.22,.17],rightCheek:[.64,.52,.22,.17],nose:[.43,.42,.14,.2],chin:[.38,.84,.24,.1]};function dt(e){let t={};for(let[n,[a,o,s,i]]of Object.entries(cn))t[n]={x:Math.round(e.x+a*e.width),y:Math.round(e.y+o*e.height),width:Math.max(2,Math.round(s*e.width)),height:Math.max(2,Math.round(i*e.height))};return t}function he(e){let t=e.tone,n=[`Estimated skin tone: ${t.category}, roughly Fitzpatrick type ${t.fitzpatrickApprox}, with a ${t.undertone.toLowerCase()} undertone.`],a=Object.values(e.concerns).filter(o=>o.level!=="low");return a.length?n.push("Areas to look at: "+a.map(o=>`${o.label.toLowerCase()} (${o.level})`).join(", ")+"."):n.push("No concerns stood out strongly in this photo."),e.warnings.length&&n.push("Note: "+e.warnings.join(" ")),n.join(" ")}var dn={home:["home","dashboard","start"],analyze:["scan","analy","face","camera","skin tone"],profile:["profile","questionnaire","about me","my details"],routine:["routine","recommendation","plan"],complaints:["complaint","problem","issue log"],progress:["progress","photo","before and after","before after","compare"],lifestyle:["lifestyle","food","sleep log","exercise log","diary"],ingredients:["ingredient","product checker","products"],reminders:["reminder","notification","alarm"],chat:["chat","assistant"],settings:["setting","privacy","export","delete my data"]},un={acne:["acne","pimple","breakout","zit","spot treatment","blackhead","whitehead"],hyperpigmentation:["dark spot","dark mark","hyperpigment","uneven","melasma","discolor","patches"],redness:["redness","red skin","rosacea","flush","sensitive"],oiliness:["oily","shine","greasy","oil control"],dryness:["dry","flaky","tight","dehydrat"],texture:["texture","pores","rough","bumpy"],darkCircles:["dark circle","under eye","eye bag","puffy"],aging:["wrinkle","fine line","aging","ageing","firm"]},pn={swelling:["swell","swollen","puffy lips","throat"],itching:["itch"],burning:["burn","sting"],rash:["rash","hives","bumps"],sunburn:["sunburn","sun burn"],thinning:["thin skin","stretch mark","steroid"]},M=(e,t)=>t.some(n=>e.includes(n)),me=e=>e.map((t,n)=>`${n+1}. ${t}`).join(`
+`);function fe(e,t={}){let n=` ${String(e||"").toLowerCase().trim()} `;if(!n.trim())return{text:'I did not catch that. You can type or say a question, for example "what is niacinamide" or "read my morning routine".'};if(M(n,["can't breathe","cannot breathe","trouble breathing","throat closing","tongue swelling","lips swelling","face swelling"]))return{text:"This could be a severe allergic reaction. Please call your local emergency number or get to emergency care now.",urgent:!0};let a=n.match(/\b(open|go to|show|take me to|navigate to)\b(.*)/);if(a){for(let[i,r]of Object.entries(dn))if(M(a[2],r))return{text:`Opening ${i==="analyze"?"face scan":i}.`,action:{navigate:i}}}if(/^\s*(hi|hello|hey|good (morning|afternoon|evening))\b/.test(n))return{text:`Hello${t.profile?.name?`, ${t.profile.name}`:""}. I am the DermaLogic assistant. Ask me about your routine, an ingredient, a skin concern, or say "help" to hear what I can do.`};if(M(n,[" help ","what can you do","commands"]))return{text:`Here is what I can do:
+`+me(['Read your morning or evening routine: say "read my morning routine".','Explain an ingredient: "what is azelaic acid".','Give tips for a concern: "how do I treat dark spots".','Help with a complaint: "my face is itching".','Tell you your last scan result: "what is my skin tone".','Open any section: "open progress" or "go to reminders".','Advice after skin bleaching: "I used to bleach my skin".'])};if(M(n,["are you a doctor","medical advice","disclaimer","diagnos"]))return{text:pe};if(M(n,["bleach","lighten","whitening","toning cream","glutathione","mercury","hydroquinone","clobetasol"])){let i=oe;return{text:`${i.intro}
+
+Soothing ingredients: ${i.soothing.slice(0,5).join(", ")}.
+Barrier-repair ingredients: ${i.barrier.slice(0,6).join(", ")}.
+Avoid for now: ${i.avoid.slice(0,6).join(", ")}.
+
+See a dermatologist if you notice: ${i.warningSigns[0].toLowerCase()} or ${i.warningSigns[1].toLowerCase()}. Turn on "history of skin bleaching" in your profile and I will tailor your routine.`}}for(let[i,r]of Object.entries(pn))if(M(n,r)){let l=ee[i];return{text:`For ${l.label.toLowerCase()}, try:
+${me(l.steps)}
+
+See a doctor if: ${l.redFlags.join("; ")}.
+
+You can log this in Complaints so I can follow up with you.`,urgent:!!l.urgent}}if(M(n,["routine","what should i use","my plan","morning","evening","night"," am "," pm "])){if(!t.profile)return{text:'I need a little information first. Say "open profile" to fill in your skin profile, then ask again.',action:null};let i=te(t.profile,t.analysis),r=M(n,["evening","night"," pm ","bed"]),l=M(n,["morning"," am "]),c=h=>me(h.map(m=>`${m.step}: ${m.detail}`));return r&&!l?{text:`Your evening routine:
+${c(i.pm)}`}:l&&!r?{text:`Your morning routine:
+${c(i.am)}`}:{text:`Morning:
+${c(i.am)}
+
+Evening:
+${c(i.pm)}${i.notes.length?`
+
+`+i.notes.join(" "):""}`}}if(M(n,["skin tone","my scan","last scan","my results","my analysis","undertone"]))return t.analysis?{text:he(t.analysis)}:{text:'You have not done a face scan yet. Say "open face scan" to start one. Everything is processed on your device.'};if(M(n,["body type"]))return{text:"A face photo cannot reliably tell your body type, so DermaLogic does not guess it. You can choose it yourself in your profile, or leave it blank. It is only used for body-care tips such as sweat and friction areas."};if(M(n,["sunscreen","spf","sun protection"]))return{text:"Use a broad-spectrum sunscreen of SPF 30 or higher every morning, even indoors near windows and on cloudy days. Use about two finger-lengths for the face and neck, and reapply every 2 hours outdoors. On deeper skin tones, a tinted sunscreen with iron oxides also helps prevent dark patches. Mineral filters such as zinc oxide are gentlest on sensitive skin."};if(M(n,["reminder"])){let i=t.reminders;return i?.enabled?{text:`Reminders are on. Morning routine at ${i.am}, evening routine at ${i.pm}, daily check-in at ${i.lifestyle}${i.sunscreen?", and sunscreen top-ups at 11, 1 and 3":""}.`}:{text:'Reminders are off. Say "open reminders" to turn them on.'}}let o=n.match(/\b(what is|what's|whats|tell me about|is|does|explain|about)\s+([a-z0-9\-\s/.]+?)(\s+(good|bad|safe|for|do|okay|ok|work|help).*)?\s*\??\s*$/);if(o){let i=le(o[2].trim());if(i)return{text:ge(i)}}let s=le(n.trim());if(s&&n.trim().length>3)return{text:ge(s)};for(let[i,r]of Object.entries(un))if(M(n,r)){let l=N[i];return{text:`For ${l.label.toLowerCase()}:
+${me(l.tips)}
+
+Ingredients that help: ${l.helps.join(", ")}.`}}return M(n,["sleep"])?{text:"Aim for 7 to 9 hours. Skin repairs itself overnight, and short sleep is linked to dullness, dark circles and slower healing. Log your sleep in Lifestyle and I will look for patterns with your skin."}:M(n,["water","hydrat","drink"])?{text:"Drinking enough water supports overall health, though it will not fix dry skin on its own; moisturizer does more for that. Track your water in Lifestyle."}:M(n,["food","diet","eat","dairy","sugar"])?{text:"Some people find high-sugar foods and dairy (especially skim milk) worsen acne. Fruit, vegetables and omega-3 rich foods support skin. Log meals in Lifestyle and after a week I will show any patterns for you."}:M(n,["exercise","workout","gym","sweat"])?{text:"Exercise boosts circulation, which is good for skin. Shower or at least rinse your face soon after sweating, and wash workout clothes often to avoid body breakouts."}:M(n,["thank"])?{text:"You are welcome. Take care of your skin."}:{text:'I am not sure about that yet. Try asking about an ingredient, a concern like acne or dark spots, your routine, or say "help".'}}function ge(e){let t=[`${e.name}.`];return e.benefit&&t.push(e.benefit),e.caution&&t.push(`Caution: ${e.caution}`),e.comedogenic>=3&&t.push(`Pore-clogging rating: ${e.comedogenic} out of 5.`),e.pregnancyCaution&&t.push("Check with a doctor before using this while pregnant or breastfeeding."),t.join(" ")}var Fe=typeof window<"u"?window.SpeechRecognition||window.webkitSpeechRecognition:null,_={input:!!Fe,output:typeof window<"u"&&"speechSynthesis"in window},ce=null;function ye({onInterim:e,onResult:t,onEnd:n,onError:a,lang:o}={}){if(!Fe)return a?.("Voice input is not supported in this browser. Try Chrome, Edge or Safari, or type your question."),()=>{};J();let s=new Fe;s.lang=o||navigator.language||"en-US",s.interimResults=!0,s.maxAlternatives=1;let i="";return s.onresult=r=>{let l="";for(let c=r.resultIndex;c<r.results.length;c++){let h=r.results[c];h.isFinal?i+=h[0].transcript:l+=h[0].transcript}l&&e?.(l)},s.onerror=r=>{let l={"not-allowed":"Microphone access was blocked. Allow the microphone in your browser settings to use voice.","no-speech":"I did not hear anything. Try again.",network:"Voice recognition needs an internet connection in this browser."}[r.error]||`Voice input error: ${r.error}`;a?.(l)},s.onend=()=>{ce=null,i.trim()&&t?.(i.trim()),n?.()},s.start(),ce=s,J}function J(){if(ce)try{ce.stop()}catch{}}function be(){return!!ce}function P(e,{rate:t=1,onEnd:n}={}){if(!_.output)return;window.speechSynthesis.cancel();let a=String(e).replace(/\n+/g,". ").replace(/\.\s*\./g,"."),o=new SpeechSynthesisUtterance(a);o.rate=t,o.lang=navigator.language||"en-US",n&&(o.onend=n),window.speechSynthesis.speak(o)}function we(){_.output&&window.speechSynthesis.cancel()}var $e=null;async function xe(e){if(!navigator.mediaDevices?.getUserMedia)throw new Error("This browser cannot open the camera. You can upload a photo instead.");B(),$e=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:1280},height:{ideal:960}},audio:!1}),e.srcObject=$e,await e.play()}function B(){$e?.getTracks().forEach(e=>e.stop()),$e=null}function X(e,t=900,n=!1){let a=e.videoWidth||e.naturalWidth||e.width,o=e.videoHeight||e.naturalHeight||e.height,s=Math.min(1,t/Math.max(a,o)),i=document.createElement("canvas");i.width=Math.round(a*s),i.height=Math.round(o*s);let r=i.getContext("2d",{willReadFrequently:!0});return n&&(r.translate(i.width,0),r.scale(-1,1)),r.drawImage(e,0,0,i.width,i.height),i}function Se(e){return new Promise((t,n)=>{let a=URL.createObjectURL(e),o=new Image;o.onload=()=>t(o),o.onerror=()=>n(new Error("Could not read that image.")),o.src=a})}var ve=null,ut="0.10.14";async function hn(){if(ve)return ve;let e=await import(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${ut}/vision_bundle.mjs`),t=await e.FilesetResolver.forVisionTasks(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${ut}/wasm`);return ve=await e.FaceDetector.createFromOptions(t,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite"},runningMode:"IMAGE"}),ve}var mn=(e,t)=>Promise.race([e,new Promise((n,a)=>setTimeout(()=>a(new Error("timeout")),t))]),ke={x:.3,y:.14,w:.4,h:.68};async function gn(e){if("FaceDetector"in window)try{let t=await new window.FaceDetector({fastMode:!0,maxDetectedFaces:1}).detect(e);if(t[0]){let n=t[0].boundingBox;return{face:pt({x:n.x,y:n.y,width:n.width,height:n.height},e),method:"Built-in browser face detection"}}}catch{}try{let a=(await mn(hn(),12e3)).detect(e).detections?.[0];if(a){let o=a.boundingBox;return{face:pt({x:o.originX,y:o.originY,width:o.width,height:o.height},e),method:"On-device face detection (MediaPipe)"}}return{face:null,method:"none"}}catch{}return{face:{x:e.width*ke.x,y:e.height*ke.y,width:e.width*ke.w,height:e.height*ke.h},method:"Guide area (face detection unavailable)"}}function pt(e,t){let n=Math.max(0,e.y-e.height*.18),a=Math.min(t.height-n,e.height*1.18);return{x:e.x,y:n,width:e.width,height:a}}function fn(e,t,n=3e3){let{data:a}=e.getImageData(t.x,t.y,t.width,t.height),o=a.length/4,s=Math.max(1,Math.floor(o/n));if(s===1)return a;let i=new Uint8ClampedArray(Math.ceil(o/s)*4),r=0;for(let l=0;l<o;l+=s)i[r++]=a[l*4],i[r++]=a[l*4+1],i[r++]=a[l*4+2],i[r++]=255;return i.subarray(0,r)}async function Le(e){let{face:t,method:n}=await gn(e);if(!t)throw new Error("No face was found. Face the camera straight on in good light, with hair off your face.");let a=e.getContext("2d",{willReadFrequently:!0}),o=dt(t),s={};for(let[r,l]of Object.entries(o)){let c=yn(l,e);c&&(s[r]=lt(fn(a,c)))}return{result:ct(s),face:t,rects:o,method:n}}function yn(e,t){let n=Math.max(0,e.x),a=Math.max(0,e.y),o=Math.min(t.width,e.x+e.width)-n,s=Math.min(t.height,e.y+e.height)-a;return o>1&&s>1?{x:n,y:a,width:o,height:s}:null}function ht(e,t,n){let a=e.getContext("2d");a.lineWidth=Math.max(2,e.width/300),a.strokeStyle="rgba(255,255,255,0.9)",a.setLineDash([8,6]),a.strokeRect(t.x,t.y,t.width,t.height),a.setLineDash([]),a.strokeStyle="rgba(244, 166, 193, 0.95)";for(let o of Object.values(n))a.strokeRect(o.x,o.y,o.width,o.height)}var bn=0,wn={logo:[[26,34,20,"deep",0,4.2],[46,18,11,"pink",-1.3,3.6],[48,46,7,"blush",-2.1,3.2]],banner:[[70,70,46,"deep",0,6.5],[150,40,22,"pink",-2,5.2],[175,105,34,"blush",-3.5,7],[250,60,14,"pink",-1.2,4.6],[300,95,26,"deep",-4.2,6.2],[110,128,12,"blush",-.6,4.2]]},vn={deep:["#9b2c4f","#5a0f2a"],pink:["#f7b6c8","#d9557f"],blush:["#ffffff","#f4a6c1"]};function kn(e,[t,n,a,o,s,i],r){let l=a>10?[[t-a*.3,n+a*.25,a*.09],[t-a*.1,n+a*.45,a*.06],[t+a*.2,n+a*.3,a*.07]]:[];return`<g class="drop" style="animation-delay:${s}s;animation-duration:${i}s;--drift:${r%2?-1:1}">
+    <circle cx="${t}" cy="${n}" r="${a}" fill="url(#${e}-${o})" />
+    <circle cx="${t}" cy="${n}" r="${a-.6}" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="${Math.max(.8,a*.05)}" />
+    <ellipse cx="${t-a*.35}" cy="${n-a*.42}" rx="${a*.32}" ry="${a*.17}" fill="#fff" fill-opacity="0.85" transform="rotate(-30 ${t-a*.35} ${n-a*.42})" />
+    <circle cx="${t+a*.42}" cy="${n+a*.38}" r="${a*.1}" fill="#fff" fill-opacity="0.5" />
+    ${l.map(([c,h,m])=>`<circle class="fizz" cx="${c}" cy="${h}" r="${m}" fill="#fff" fill-opacity="0.7" />`).join("")}
+  </g>`}function G({variant:e="logo",size:t=32,label:n="",className:a=""}={}){let o=`dl${++bn}`,s=e==="banner"?"0 0 340 160":"0 0 64 64",i=n?`role="img" aria-label="${n}"`:'aria-hidden="true" focusable="false"',r=Object.entries(vn).map(([c,[h,m]])=>`<radialGradient id="${o}-${c}" cx="35%" cy="30%" r="75%">
+        <stop offset="0" stop-color="${h}" stop-opacity="0.95" />
+        <stop offset="1" stop-color="${m}" stop-opacity="0.95" />
+      </radialGradient>`).join(""),l=e==="banner"?'width="100%"':`width="${t}" height="${t}"`;return`<svg class="droplets droplets-${e} ${a}" viewBox="${s}" ${l} ${i} xmlns="http://www.w3.org/2000/svg">
+    <defs>${r}</defs>
+    ${wn[e].map((c,h)=>kn(o,c,h)).join("")}
+  </svg>`}var He={dairy:"Dairy (milk, cheese, ice cream)",sugar:"Sugary or high-GI foods",fried:"Fried or greasy food",vegFruit:"Plenty of fruit and vegetables",omega3:"Oily fish, nuts or seeds",alcohol:"Alcohol",caffeine:"Lots of caffeine",spicy:"Spicy food"},mt=["None","Walking","Running","Gym / weights","Cycling","Dance","Yoga / stretching","Sports","Other"],Z=e=>e.reduce((t,n)=>t+n,0)/e.length;function $n(e){let t=new Date(e+"T12:00:00");return t.setDate(t.getDate()+1),t.toISOString().slice(0,10)}function xn(e){return Object.entries(e).map(([t,n])=>{let a=[n.skinRating,e[$n(t)]?.skinRating].filter(o=>o!=null&&o!=="");return a.length?{date:t,e:n,rating:Z(a.map(Number))}:null}).filter(Boolean)}function gt(e,{minDays:t=7,minGroup:n=3}={}){let a=xn(e||{});if(a.length<t)return{ready:!1,daysLogged:a.length,needed:t,insights:[]};let o=[...Object.entries(He).map(([i,r])=>({label:`days with ${r.toLowerCase()}`,test:l=>(l.foods||[]).includes(i),other:l=>!(l.foods||[]).includes(i)})),{label:"nights with under 6 hours of sleep",test:i=>Number(i.sleepHours)>0&&Number(i.sleepHours)<6,other:i=>Number(i.sleepHours)>=7},{label:"days with under 4 glasses of water",test:i=>i.waterGlasses!==""&&i.waterGlasses!=null&&Number(i.waterGlasses)<4,other:i=>Number(i.waterGlasses)>=6},{label:"days with 20+ minutes of exercise",test:i=>Number(i.exerciseMin)>=20,other:i=>!Number(i.exerciseMin)},{label:"high-stress days",test:i=>Number(i.stress)>=4,other:i=>Number(i.stress)>0&&Number(i.stress)<=2}],s=[];for(let i of o){let r=a.filter(h=>i.test(h.e)).map(h=>h.rating),l=a.filter(h=>i.other(h.e)).map(h=>h.rating);if(r.length<n||l.length<n)continue;let c=Z(r)-Z(l);Math.abs(c)<.5||s.push({factor:i.label,direction:c<0?"worse":"better",withAvg:Math.round(Z(r)*10)/10,withoutAvg:Math.round(Z(l)*10)/10,n:r.length+l.length,text:`On ${i.label}, your skin rating averaged ${(Math.round(Z(r)*10)/10).toFixed(1)} out of 5, compared with ${(Math.round(Z(l)*10)/10).toFixed(1)} otherwise (that day and the next).`})}return s.sort((i,r)=>Math.abs(r.withAvg-r.withoutAvg)-Math.abs(i.withAvg-i.withoutAvg)),{ready:!0,daysLogged:a.length,needed:t,insights:s}}function Ce(e,t=new Date){let n=[];for(let a=e-1;a>=0;a--){let o=new Date(t);o.setDate(o.getDate()-a);let s=i=>String(i).padStart(2,"0");n.push(`${o.getFullYear()}-${s(o.getMonth()+1)}-${s(o.getDate())}`)}return n}function ft(e,t){let n=0,a=Ce(365).reverse();for(let[o,s]of a.entries()){let i=e[s];if(i&&(i.am?.length||0)>=t.am.length&&(i.pm?.length||0)>=t.pm.length)n++;else{if(o===0)continue;break}}return n}var yt={title:"Today",render(e){let t=y.get(),n=R(),a=t.profile?.name?`, ${u(t.profile.name)}`:"",o=t.profile?te(t.profile,t.analyses.at(-1)?.result):null,s=t.routineLog[n]||{am:[],pm:[]},i=ie(t.complaints),r=!!t.lifestyle[n],l=t.analyses.at(-1),c=(h,m,d)=>`
+      <fieldset class="checklist">
+        <legend>${d}</legend>
+        ${m.map((b,f)=>`<label class="check">
+              <input type="checkbox" data-part="${h}" value="${f}" ${s[h]?.includes(f)?"checked":""} />
+              <span><strong>${u(b.step)}</strong> <span class="muted">${u(b.detail)}</span></span>
+            </label>`).join("")}
+      </fieldset>`;e.innerHTML=`
+      <section class="hero" aria-labelledby="hero-h">
+        <div>
+          <h1 id="hero-h">Good to see you${a}</h1>
+          <p>${L(new Date().toISOString(),{dateStyle:"full"})}</p>
+          <p>Care that understands your skin.</p>
+        </div>
+        ${G({variant:"banner"})}
+      </section>
+
+      ${t.profile?"":`<section class="card card-accent" aria-labelledby="start-h">
+              <h2 id="start-h">Get started</h2>
+              <ol class="steps">
+                <li><a href="#/profile">Fill in your skin profile</a> (2 minutes)</li>
+                <li><a href="#/analyze">Do a face scan</a>, processed privately on this device</li>
+                <li><a href="#/routine">Get your personalized routine</a></li>
+              </ol>
+            </section>`}
+
+      ${i.length?`<section class="card card-warn" aria-labelledby="fu-h">
+              <h2 id="fu-h">Follow-ups due</h2>
+              <ul>${i.map(h=>`<li>${u(h.label)} logged ${L(h.createdAt)}</li>`).join("")}</ul>
+              <a class="btn" href="#/complaints">Answer follow-ups</a>
+            </section>`:""}
+
+      ${o?`<section class="card" aria-labelledby="today-h">
+              <h2 id="today-h">Today's routine</h2>
+              <p class="muted">Tick each step as you do it. <span id="streak">${ft(t.routineLog,o)}</span>-day streak.</p>
+              <div class="grid-2">
+                ${c("am",o.am,"Morning")}
+                ${c("pm",o.pm,"Evening")}
+              </div>
+            </section>`:""}
+
+      <div class="grid-2">
+        <section class="card" aria-labelledby="scan-h">
+          <h2 id="scan-h">Last face scan</h2>
+          ${l?`<p>${L(l.date)}: ${u(l.result.tone.category)} tone, ${u(l.result.tone.undertone.toLowerCase())} undertone.</p>
+                 <a href="#/analyze">Scan again</a>`:'<p>No scan yet.</p><a class="btn" href="#/analyze">Start a scan</a>'}
+        </section>
+        <section class="card" aria-labelledby="ls-h">
+          <h2 id="ls-h">Daily check-in</h2>
+          ${r?`<p>You have logged today. Nice work.</p><a href="#/lifestyle">Edit today's log</a>`:'<p>Log your sleep, food, exercise and how your skin feels.</p><a class="btn" href="#/lifestyle">Log today</a>'}
+        </section>
+        <section class="card" aria-labelledby="pp-h">
+          <h2 id="pp-h">Progress photo</h2>
+          <p>Take a photo in the same spot and light each day to compare over time.</p>
+          <a href="#/progress">Open progress photos</a>
+        </section>
+        <section class="card" aria-labelledby="as-h">
+          <h2 id="as-h">Ask the assistant</h2>
+          <p>Use the <strong>Ask by voice</strong> button at the top (or press Alt+V) from any page, or type in the <a href="#/chat">Assistant</a>.</p>
+        </section>
+      </div>
+    `,e.addEventListener("change",h=>{let m=h.target.closest("input[data-part]");if(!m)return;let d=m.dataset.part,b=Number(m.value);y.update(T=>{var z;let $=(z=T.routineLog)[n]||(z[n]={am:[],pm:[]});$[d]=m.checked?[...new Set([...$[d]||[],b])]:($[d]||[]).filter(w=>w!==b)});let f=e.querySelector("#streak");f&&o&&(f.textContent=ft(y.get().routineLog,o));let v=y.get().routineLog[n];o&&v[d].length===o[d].length&&D(`${d==="am"?"Morning":"Evening"} routine complete. Well done.`)})}};var bt={title:"Face scan",render(e,{navigate:t}){let n=y.get();e.innerHTML=`
+      <h1>Face scan</h1>
+      <p class="lead">Estimate your skin tone and spot areas to focus on. The photo is analyzed <strong>on this device</strong> and is not uploaded.</p>
+
+      <details class="card tips">
+        <summary>Tips for an accurate scan</summary>
+        <ul>
+          <li>Face a window or soft daylight. Avoid colored lights and strong shadows.</li>
+          <li>Remove makeup, glasses and hair from your face.</li>
+          <li>Hold the camera at eye level and keep a neutral expression.</li>
+          <li>Use the same place and time of day each scan so results are comparable.</li>
+        </ul>
+      </details>
+
+      <section class="card" aria-labelledby="cap-h">
+        <h2 id="cap-h">Take or upload a photo</h2>
+        <div class="camera-wrap" id="camera-wrap" hidden>
+          <video id="video" playsinline muted aria-label="Camera preview"></video>
+          <div class="guide-oval" aria-hidden="true"></div>
+          <p class="camera-hint" id="camera-hint">Line your face up inside the oval.</p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="start-cam">Open camera</button>
+          <button type="button" class="btn" id="capture" hidden>Capture and analyze</button>
+          <button type="button" class="btn btn-ghost" id="stop-cam" hidden>Close camera</button>
+          <label class="btn file-btn">
+            Upload a photo
+            <input type="file" id="upload" accept="image/*" class="sr-only" />
+          </label>
+        </div>
+        <p class="muted small">Face detection uses an on-device model when available. If it cannot load, DermaLogic samples the area inside the guide oval.</p>
+      </section>
+
+      <div id="results" aria-live="polite"></div>
+
+      ${n.analyses.length>1?`<section class="card" aria-labelledby="hist-h"><h2 id="hist-h">Scan history</h2>
+              <table class="table"><caption class="sr-only">Previous scan results</caption>
+              <thead><tr><th scope="col">Date</th><th scope="col">Tone</th><th scope="col">Redness</th><th scope="col">Uneven tone</th><th scope="col">Shine</th><th scope="col">Blemishes</th></tr></thead>
+              <tbody>${n.analyses.slice(-10).reverse().map(d=>`<tr><td>${L(d.date)}</td><td>${u(d.result.tone.category)}</td><td>${d.result.concerns.redness.score}</td><td>${d.result.concerns.hyperpigmentation.score}</td><td>${d.result.concerns.oiliness.score}</td><td>${d.result.concerns.acne.score}</td></tr>`).join("")}</tbody></table></section>`:""}
+    `;let a=e.querySelector("#video"),o=e.querySelector("#camera-wrap"),s=e.querySelector("#start-cam"),i=e.querySelector("#capture"),r=e.querySelector("#stop-cam"),l=e.querySelector("#results"),c=d=>{o.hidden=!d,i.hidden=!d,r.hidden=!d,s.hidden=d};s.addEventListener("click",async()=>{try{c(!0),await xe(a),D("Camera on. Line your face up inside the oval, then press Capture and analyze."),i.focus()}catch(d){c(!1),C(d.message||"Could not open the camera. Check camera permissions, or upload a photo.","error")}}),r.addEventListener("click",()=>{B(),c(!1),s.focus()}),i.addEventListener("click",async()=>{let d=X(a,900,!0);B(),c(!1),await h(d)}),e.querySelector("#upload").addEventListener("change",async d=>{let b=d.target.files?.[0];if(b)try{let f=await Se(b);await h(X(f,900))}catch(f){C(f.message,"error")}});async function h(d){l.innerHTML=`<div class="card loader" role="status">${G({size:40,className:"busy"})}<p>Analyzing your photo on this device\u2026</p></div>`;try{let b=ue(d),{result:f,face:v,rects:T,method:$}=await Le(d);ht(d,v,T);let z={id:Y(),date:new Date().toISOString(),result:f,method:$};y.update(w=>w.analyses.push(z)),m(z,d,b)}catch(b){l.innerHTML=`<div class="card card-warn" role="alert"><p>${u(b.message)}</p></div>`}}function m(d,b,f){let v=d.result,T=he(v),$=Object.entries(v.concerns).map(([w,k])=>`<li class="concern-row">
+            <div class="concern-head"><span>${u(k.label)}</span> ${Ve(k.level)}</div>
+            ${Ke(k.score,k.label)}
+            ${k.level!=="low"&&N[w]?`<p class="small muted">Tip: ${u(N[w].tips[0])}</p>`:""}
+          </li>`).join("");l.innerHTML=`
+        <section class="card" aria-labelledby="res-h">
+          <h2 id="res-h" tabindex="-1">Your results</h2>
+          <p class="sr-only">${u(T)}</p>
+          <div class="result-grid">
+            <figure class="result-photo">
+              <div id="canvas-host"></div>
+              <figcaption class="small muted">Outlined boxes show the areas sampled. Method: ${u(d.method)}.</figcaption>
+            </figure>
+            <div>
+              <h3>Skin tone (estimate)</h3>
+              <div class="tone">
+                <span class="swatch" style="background:${v.tone.hex}" role="img" aria-label="Color swatch of your measured skin tone"></span>
+                <dl class="kv">
+                  <dt>Tone</dt><dd>${u(v.tone.category)}</dd>
+                  <dt>Approx. Fitzpatrick type</dt><dd>${u(v.tone.fitzpatrickApprox)}</dd>
+                  <dt>Undertone</dt><dd>${u(v.tone.undertone)}</dd>
+                  <dt>ITA\xB0</dt><dd>${v.tone.ita}</dd>
+                </dl>
+              </div>
+              <p class="small muted">Fitzpatrick type normally describes how skin reacts to sun; a photo can only approximate it.</p>
+
+              <h3>Body type</h3>
+              <p class="small">A face photo cannot reliably tell body type, so we do not guess. ${n.profile?.bodyType&&n.profile.bodyType!=="skip"?`Your profile says: <strong>${u(n.profile.bodyType)}</strong>.`:'You can <a href="#/profile">add it in your profile</a> for body-care tips.'}</p>
+            </div>
+          </div>
+
+          <h3>Areas to look at</h3>
+          <ul class="concerns">${$}</ul>
+          ${v.warnings.length?`<div class="callout" role="note"><strong>Accuracy note:</strong> ${u(v.warnings.join(" "))}</div>`:""}
+          <p class="small muted">These are camera estimates, not a diagnosis. Dryness, sensitivity and texture are better described by you in your skin profile.</p>
+
+          <div class="btn-row">
+            <button type="button" class="btn btn-primary" id="to-routine">See my routine</button>
+            <button type="button" class="btn" id="save-photo">Save as today's progress photo</button>
+            <button type="button" class="btn btn-ghost" id="read-aloud">Read results aloud</button>
+          </div>
+        </section>`;let z=l.querySelector("#canvas-host");b.setAttribute("role","img"),b.setAttribute("aria-label","Your photo with the sampled skin areas outlined"),b.className="result-canvas",z.appendChild(b),l.querySelector("#res-h").focus(),D("Analysis complete. "+T),y.get().settings.speak&&P(T,{rate:y.get().settings.rate}),l.querySelector("#to-routine").addEventListener("click",()=>t(y.get().profile?"routine":"profile")),l.querySelector("#read-aloud").addEventListener("click",()=>P(T,{rate:y.get().settings.rate})),l.querySelector("#save-photo").addEventListener("click",async w=>{let k=w.currentTarget;await O.add({id:Y(),date:R(),createdAt:new Date().toISOString(),dataUrl:f,analysisId:d.id,note:"",rating:""}),k.disabled=!0,C("Saved to progress photos.")})}return()=>B()}};var Sn={hydroquinone:"Hydroquinone creams",steroid:"Steroid creams (e.g. clobetasol, betamethasone)",mercury:"Imported or unlabelled whitening soaps or creams",injections:"Glutathione pills, drips or injections",natural:"Lemon, baking soda or other home remedies",unknown:"Not sure what was in it"},wt={title:"Skin profile",render(e,{navigate:t}){let n=y.get().profile||{},a=(r,l,c,h)=>`<label class="check"><input type="radio" name="${r}" value="${l}" ${h===l?"checked":""} /> <span>${u(c)}</span></label>`,o=(r,l,c,h=[])=>`<label class="check"><input type="checkbox" data-multi name="${r}" value="${l}" ${h.includes(l)?"checked":""} /> <span>${u(c)}</span></label>`;e.innerHTML=`
+      <h1>Skin profile</h1>
+      <p class="lead">Your answers personalize your routine. They are saved only on this device.</p>
+      <form id="profile-form" class="card form" novalidate>
+        <div class="field">
+          <label for="name">First name or nickname <span class="muted">(optional)</span></label>
+          <input id="name" name="name" autocomplete="given-name" value="${u(n.name||"")}" />
+        </div>
+
+        <fieldset>
+          <legend>Skin type <span class="req">(required)</span></legend>
+          <p class="hint" id="st-hint">An hour after washing with no products, how does your skin feel?</p>
+          <div class="options" aria-describedby="st-hint">
+            ${a("skinType","oily","Oily: shiny all over",n.skinType)}
+            ${a("skinType","dry","Dry: tight or flaky",n.skinType)}
+            ${a("skinType","combination","Combination: oily T-zone, normal or dry cheeks",n.skinType)}
+            ${a("skinType","normal","Normal: comfortable",n.skinType)}
+            ${a("skinType","sensitive","Sensitive: stings, itches or reddens easily",n.skinType)}
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Main concerns <span class="muted">(choose any)</span></legend>
+          <div class="options cols-2">${Object.entries(N).map(([r,l])=>o("concerns",r,l.label,n.concerns)).join("")}</div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Body type <span class="muted">(optional, you choose)</span></legend>
+          <p class="hint" id="bt-hint">This cannot be measured from a face photo, so we ask instead. It is only used for body-care tips such as sweat and friction areas.</p>
+          <div class="options" aria-describedby="bt-hint">${Object.entries(Ze).map(([r,l])=>a("bodyType",r,l,n.bodyType)).join("")}</div>
+        </fieldset>
+
+        <div class="field">
+          <label for="ageRange">Age range</label>
+          <select id="ageRange" name="ageRange">
+            ${["","Under 18","18-24","25-34","35-44","45-54","55+"].map(r=>`<option value="${r}" ${n.ageRange===r?"selected":""}>${r||"Prefer not to say"}</option>`).join("")}
+          </select>
+        </div>
+
+        <label class="check"><input type="checkbox" name="pregnant" ${n.pregnant?"checked":""} /> <span>I am pregnant, trying to conceive or breastfeeding</span></label>
+
+        <fieldset class="bleach">
+          <legend>Skin bleaching or lightening history</legend>
+          <label class="check"><input type="checkbox" name="bleachingHistory" id="bleachingHistory" ${n.bleachingHistory?"checked":""} aria-controls="bleach-more" /> <span>I have used skin bleaching or lightening products</span></label>
+          <p class="hint">This stays private. It lets DermaLogic recommend soothing and barrier-repair care and avoid ingredients that could harm your skin.</p>
+          <div id="bleach-more" ${n.bleachingHistory?"":"hidden"}>
+            <fieldset>
+              <legend>What did you use? <span class="muted">(choose any)</span></legend>
+              <div class="options">${Object.entries(Sn).map(([r,l])=>o("bleachingProducts",r,l,n.bleachingProducts)).join("")}</div>
+            </fieldset>
+            <div class="field">
+              <label for="bleachingStopped">When did you last use them?</label>
+              <select id="bleachingStopped" name="bleachingStopped">
+                ${[["","Choose\u2026"],["current","I still use them"],["<3m","Less than 3 months ago"],["3-12m","3 to 12 months ago"],[">1y","Over a year ago"]].map(([r,l])=>`<option value="${r}" ${n.bleachingStopped===r?"selected":""}>${l}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="allergies">Known allergies or ingredients that react badly <span class="muted">(optional)</span></label>
+          <textarea id="allergies" name="allergies" rows="2">${u(n.allergies||"")}</textarea>
+        </div>
+
+        <p id="form-error" class="error" role="alert"></p>
+        <button class="btn btn-primary" type="submit">Save profile</button>
+      </form>
+    `;let s=e.querySelector("#profile-form"),i=e.querySelector("#bleachingHistory");i.addEventListener("change",()=>e.querySelector("#bleach-more").hidden=!i.checked),s.addEventListener("submit",r=>{r.preventDefault();let l=U(s);if(!l.skinType||!V[l.skinType]){let c=e.querySelector("#form-error");c.textContent="Please choose your skin type.",s.querySelector('input[name="skinType"]').focus();return}l.bleachingHistory||(l.bleachingProducts=[],l.bleachingStopped=""),y.update(c=>c.profile={...c.profile,...l,updatedAt:new Date().toISOString()}),C("Profile saved."),t("routine")})}};var vt={title:"My routine",render(e){let t=y.get();if(!t.profile){e.innerHTML='<h1>My routine</h1><div class="card"><p>Fill in your skin profile first so we can personalize your routine.</p><a class="btn btn-primary" href="#/profile">Open skin profile</a></div>';return}let n=te(t.profile,t.analyses.at(-1)?.result),a=s=>`<ol class="routine">${s.map(i=>`<li><strong>${u(i.step)}</strong><span>${u(i.detail)}</span></li>`).join("")}</ol>`,o=n.bleachingPlan;e.innerHTML=`
+      <h1>My routine</h1>
+      <p class="lead">Built for <strong>${u(n.skinType.toLowerCase())}</strong> skin${n.concerns.length?`, focusing on ${u(n.concerns.slice(0,3).map(s=>s.label.toLowerCase()).join(", "))}`:""}.</p>
+      <div class="btn-row"><button type="button" class="btn btn-ghost" id="read">Read routine aloud</button><a class="btn btn-ghost" href="#/profile">Edit profile</a></div>
+
+      ${n.notes.length?`<div class="callout" role="note">${I(n.notes)}</div>`:""}
+
+      <div class="grid-2">
+        <section class="card" aria-labelledby="am-h"><h2 id="am-h">Morning</h2>${a(n.am)}</section>
+        <section class="card" aria-labelledby="pm-h"><h2 id="pm-h">Evening</h2>${a(n.pm)}</section>
+      </div>
+
+      ${n.weekly.length?`<section class="card" aria-labelledby="wk-h"><h2 id="wk-h">Weekly</h2>${I(n.weekly)}</section>`:""}
+
+      ${o?`<section class="card card-accent" aria-labelledby="bp-h">
+              <h2 id="bp-h">Soothing and barrier-repair plan</h2>
+              <p>${u(o.intro)}</p>
+              ${o.personal.length?`<div class="callout" role="note">${I(o.personal)}</div>`:""}
+              ${o.phases.map(s=>`<h3>${u(s.name)}</h3>${I(s.steps)}`).join("")}
+              <div class="grid-2">
+                <div><h3>Soothing ingredients</h3>${I(o.soothing,"chips")}</div>
+                <div><h3>Barrier-repair ingredients</h3>${I(o.barrier,"chips")}</div>
+              </div>
+              <h3>See a dermatologist if you notice</h3>${I(o.warningSigns)}
+            </section>`:""}
+
+      <section class="card" aria-labelledby="ki-h">
+        <h2 id="ki-h">Key ingredients for you</h2>
+        ${n.keyIngredients.length?`<ul class="ing-list">${n.keyIngredients.map(s=>`<li><strong>${u(s.name)}</strong> <span class="muted">for ${u(s.reason.toLowerCase())}</span><br />${u(s.benefit)}</li>`).join("")}</ul>`:"<p>Keep it simple: a gentle cleanser, moisturizer and daily sunscreen.</p>"}
+        ${n.avoid.length?`<h3>Avoid for now</h3>${I(n.avoid,"chips chips-warn")}`:""}
+      </section>
+
+      ${n.concerns.length?`<section class="card" aria-labelledby="tips-h"><h2 id="tips-h">Tips for your concerns</h2>
+              ${n.concerns.map(s=>`<h3>${u(s.label)}</h3>${I(s.tips)}`).join("")}</section>`:""}
+
+      ${n.body.length?`<section class="card" aria-labelledby="body-h"><h2 id="body-h">Body care</h2>${I(n.body)}</section>`:""}
+
+      <p class="small muted">Patch-test new products on your inner arm or behind the ear for 2 to 3 days. Introduce one new product at a time, about two weeks apart.</p>
+    `,e.querySelector("#read").addEventListener("click",()=>{let s=`Morning. ${n.am.map(i=>`${i.step}: ${i.detail}`).join(". ")}. Evening. ${n.pm.map(i=>`${i.step}: ${i.detail}`).join(". ")}.`;P(s,{rate:t.settings.rate})})}};function Ln(e){let t=ee[e.category];return`
+    ${t.urgent?'<div class="callout callout-danger" role="alert"><strong>If your lips, tongue, eyes or throat are swelling, or you have trouble breathing, call emergency services now.</strong></div>':""}
+    <h3>What to try</h3>${I(t.steps)}
+    <h3>See a doctor if</h3>${I(t.redFlags)}`}var kt={title:"Complaints",render(e){let t=n=>{let a=y.get(),o=a.complaints.filter(c=>!c.resolved).reverse(),s=a.complaints.filter(c=>c.resolved).reverse(),i=new Date;e.innerHTML=`
+        <h1>Complaints</h1>
+        <p class="lead">Log a skin problem to get self-care steps. DermaLogic will check in with you to see how it is going.</p>
+
+        <form id="c-form" class="card form" aria-labelledby="new-h">
+          <h2 id="new-h">Log a complaint</h2>
+          <div class="field">
+            <label for="category">What is happening?</label>
+            <select id="category" name="category" required>
+              ${Object.entries(ee).map(([c,h])=>`<option value="${c}">${u(h.label)}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label for="area">Where? <span class="muted">(e.g. cheeks, forehead, neck)</span></label>
+            <input id="area" name="area" />
+          </div>
+          <div class="field">
+            <label for="severity">How bad is it? <output id="sev-out" for="severity">3</output> out of 5</label>
+            <input type="range" id="severity" name="severity" min="1" max="5" value="3" aria-describedby="sev-hint" />
+            <p class="hint" id="sev-hint">1 is barely noticeable, 5 is severe.</p>
+          </div>
+          <div class="field">
+            <label for="since">When did it start?</label>
+            <input type="date" id="since" name="since" />
+          </div>
+          <div class="field">
+            <label for="trigger">Anything new? <span class="muted">(product, food, detergent, stress)</span></label>
+            <input id="trigger" name="trigger" />
+          </div>
+          <div class="field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes" rows="2"></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">Get solutions</button>
+        </form>
+
+        <section aria-labelledby="active-h">
+          <h2 id="active-h">Active (${o.length})</h2>
+          ${o.length?"":'<p class="muted">Nothing logged right now.</p>'}
+          ${o.map(c=>{let h=c.nextFollowUp&&new Date(c.nextFollowUp)<=i;return`<article class="card ${h?"card-warn":""}" id="c-${c.id}" aria-labelledby="ct-${c.id}">
+                <h3 id="ct-${c.id}" tabindex="-1">${u(c.label)}${c.area?` \xB7 ${u(c.area)}`:""}</h3>
+                <p class="small muted">Logged ${L(c.createdAt)} \xB7 severity ${u(c.severity)}/5${c.trigger?` \xB7 possible trigger: ${u(c.trigger)}`:""}</p>
+                ${c.lastAdvice?`<div class="callout ${c.escalate?"callout-danger":""}" role="note">${u(c.lastAdvice)}</div>`:""}
+                <details ${c.followUps?.length?"":"open"}><summary>Solutions</summary>${Ln(c)}</details>
+                <fieldset class="followup">
+                  <legend>${h?"<strong>Follow-up due:</strong> ":""}How is it now?</legend>
+                  <div class="btn-row">
+                    <button type="button" class="btn btn-small" data-fu="better" data-id="${c.id}">Better</button>
+                    <button type="button" class="btn btn-small" data-fu="same" data-id="${c.id}">About the same</button>
+                    <button type="button" class="btn btn-small" data-fu="worse" data-id="${c.id}">Worse</button>
+                    <button type="button" class="btn btn-small btn-ghost" data-fu="resolved" data-id="${c.id}">Gone</button>
+                  </div>
+                  ${c.nextFollowUp?`<p class="small muted">Next check-in: ${L(c.nextFollowUp)}</p>`:""}
+                </fieldset>
+                ${c.followUps?.length?`<details><summary>History (${c.followUps.length})</summary><ul>${c.followUps.map(m=>`<li>${L(m.at)}: ${u(m.answer)}</li>`).join("")}</ul></details>`:""}
+              </article>`}).join("")}
+        </section>
+
+        ${s.length?`<section aria-labelledby="res-h"><h2 id="res-h">Resolved</h2><ul>${s.map(c=>`<li>${u(c.label)} \xB7 ${L(c.createdAt)} to ${L(c.resolvedAt)}</li>`).join("")}</ul></section>`:""}
+      `;let r=e.querySelector("#c-form"),l=r.querySelector("#severity");l.addEventListener("input",()=>r.querySelector("#sev-out").textContent=l.value),r.addEventListener("submit",c=>{c.preventDefault();let h=U(r),m=ee[h.category],d=new Date().toISOString(),b={id:Y(),...h,label:m.label,createdAt:d,nextFollowUp:Pe(d,m.urgent?1:3),followUps:[],resolved:!1};y.update(v=>v.complaints.push(b)),C("Complaint logged. We will check in with you in a few days."),t(b.id);let f=y.get().settings;f.speak&&P(`For ${m.label}. ${m.steps.join(" ")}`,{rate:f.rate})}),e.querySelectorAll("[data-fu]").forEach(c=>c.addEventListener("click",()=>{let h=c.dataset.id,m=c.dataset.fu,d;y.update(f=>{let v=f.complaints.find(T=>T.id===h);d=Xe(m,v),v.followUps=[...v.followUps||[],{at:new Date().toISOString(),answer:m}],v.lastAdvice=d.text,v.escalate=!!d.escalate,d.resolve?(v.resolved=!0,v.resolvedAt=new Date().toISOString()):v.nextFollowUp=Pe(new Date().toISOString(),d.nextDays)}),D(d.text,!!d.escalate);let b=y.get().settings;b.speak&&P(d.text,{rate:b.rate}),t(d.resolve?null:h)})),n&&e.querySelector(`#ct-${n}`)?.focus()};t()}};var $t={redness:"Redness",hyperpigmentation:"Uneven tone",oiliness:"Shine",acne:"Blemishes",darkCircles:"Dark circles"};function Cn(e){return new Promise((t,n)=>{let a=new Image;a.onload=()=>t(a),a.onerror=n,a.src=e})}var xt={title:"Progress photos",async render(e){let t=await O.all(),n=()=>{let o=t[0],s=t.at(-1);e.innerHTML=`
+        <h1>Progress photos</h1>
+        <p class="lead">Take a photo each day in the same light and position, then compare any two days. Photos stay on this device.</p>
+
+        <section class="card" aria-labelledby="add-h">
+          <h2 id="add-h">Add today's photo</h2>
+          <div class="camera-wrap" id="pcam" hidden>
+            <video id="pvideo" playsinline muted aria-label="Camera preview"></video>
+            <div class="guide-oval" aria-hidden="true"></div>
+          </div>
+          <form id="p-form" class="form">
+            <div class="grid-2">
+              <div class="field">
+                <label for="p-rating">How does your skin feel today?</label>
+                <select id="p-rating" name="rating">
+                  <option value="">Choose\u2026</option>
+                  <option value="1">1 \xB7 Very bad</option><option value="2">2 \xB7 Bad</option><option value="3">3 \xB7 Okay</option><option value="4">4 \xB7 Good</option><option value="5">5 \xB7 Great</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="p-note">Note <span class="muted">(optional)</span></label>
+                <input id="p-note" name="note" placeholder="e.g. started new serum" />
+              </div>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-primary" id="p-cam">Open camera</button>
+              <button type="button" class="btn" id="p-snap" hidden>Take photo</button>
+              <label class="btn file-btn">Upload a photo<input type="file" id="p-upload" accept="image/*" class="sr-only" /></label>
+            </div>
+          </form>
+        </section>
+
+        ${t.length>=2?`<section class="card" aria-labelledby="cmp-h">
+                <h2 id="cmp-h">Before and after</h2>
+                <div class="grid-2">
+                  <div class="field"><label for="before">Before</label><select id="before">${t.map(i=>`<option value="${i.id}" ${i===o?"selected":""}>${L(i.date)}${i.note?" \xB7 "+u(i.note):""}</option>`).join("")}</select></div>
+                  <div class="field"><label for="after">After</label><select id="after">${t.map(i=>`<option value="${i.id}" ${i===s?"selected":""}>${L(i.date)}${i.note?" \xB7 "+u(i.note):""}</option>`).join("")}</select></div>
+                </div>
+                <div class="compare" id="compare">
+                  <img id="cmp-before" alt="" />
+                  <div class="compare-after" id="cmp-after-wrap"><img id="cmp-after" alt="" /></div>
+                  <div class="compare-line" id="cmp-line" aria-hidden="true"></div>
+                </div>
+                <div class="field">
+                  <label for="cmp-slider">Slide to compare (left shows before, right shows after)</label>
+                  <input type="range" id="cmp-slider" min="0" max="100" value="50" />
+                </div>
+                <div class="btn-row">
+                  <button type="button" class="btn" id="side">Show side by side</button>
+                  <button type="button" class="btn" id="score">Compare skin scores</button>
+                </div>
+                <div class="side-by-side" id="sbs" hidden></div>
+                <div id="score-out" aria-live="polite"></div>
+              </section>`:'<p class="card muted">Add at least two photos to compare before and after.</p>'}
+
+        <section aria-labelledby="gal-h">
+          <h2 id="gal-h">All photos (${t.length})</h2>
+          <ul class="gallery">
+            ${t.slice().reverse().map(i=>`<li>
+                <figure>
+                  <img src="${i.dataUrl}" alt="Progress photo from ${u(L(i.date))}${i.note?": "+u(i.note):""}" loading="lazy" />
+                  <figcaption>${L(i.date)}${i.rating?` \xB7 skin ${u(i.rating)}/5`:""}${i.note?`<br />${u(i.note)}`:""}</figcaption>
+                </figure>
+                <button type="button" class="btn btn-small btn-ghost" data-del="${i.id}" aria-label="Delete photo from ${u(L(i.date))}">Delete</button>
+              </li>`).join("")}
+          </ul>
+        </section>`,a()},a=()=>{let o=e.querySelector("#p-form"),s=e.querySelector("#pvideo"),i=e.querySelector("#p-cam"),r=e.querySelector("#p-snap"),l=async w=>{let k=o.querySelector("#p-rating").value,g=o.querySelector("#p-note").value,x={id:Y(),date:R(),createdAt:new Date().toISOString(),dataUrl:ue(w),rating:k,note:g};await O.add(x),k&&y.update(A=>A.lifestyle[x.date]={...A.lifestyle[x.date]||{},skinRating:k}),t=await O.all(),C("Photo saved."),n()};i.addEventListener("click",async()=>{try{e.querySelector("#pcam").hidden=!1,await xe(s),i.hidden=!0,r.hidden=!1,r.focus()}catch(w){e.querySelector("#pcam").hidden=!0,C(w.message||"Could not open the camera.","error")}}),r.addEventListener("click",async()=>{let w=X(s,900,!0);B(),await l(w)}),e.querySelector("#p-upload").addEventListener("change",async w=>{let k=w.target.files?.[0];if(!k)return;let g=await Se(k);await l(X(g,900))}),e.querySelectorAll("[data-del]").forEach(w=>w.addEventListener("click",async()=>{confirm("Delete this photo? This cannot be undone.")&&(await O.remove(w.dataset.del),t=await O.all(),D("Photo deleted."),n())}));let c=e.querySelector("#before");if(!c)return;let h=e.querySelector("#after"),m=e.querySelector("#cmp-before"),d=e.querySelector("#cmp-after"),b=e.querySelector("#cmp-after-wrap"),f=e.querySelector("#cmp-line"),v=e.querySelector("#cmp-slider"),T=w=>t.find(k=>k.id===w),$=()=>{let w=T(c.value),k=T(h.value);m.src=w.dataUrl,d.src=k.dataUrl,m.alt=`Before: ${L(w.date)}`,d.alt=`After: ${L(k.date)}`,e.querySelector("#sbs").innerHTML=`<figure><img src="${w.dataUrl}" alt="Before, ${u(L(w.date))}" /><figcaption>Before \xB7 ${L(w.date)}</figcaption></figure><figure><img src="${k.dataUrl}" alt="After, ${u(L(k.date))}" /><figcaption>After \xB7 ${L(k.date)}</figcaption></figure>`,e.querySelector("#score-out").innerHTML=""},z=()=>{let w=v.value;b.style.clipPath=`inset(0 0 0 ${w}%)`,f.style.left=`${w}%`,v.setAttribute("aria-valuetext",`${w}% before, ${100-w}% after`)};c.addEventListener("change",$),h.addEventListener("change",$),v.addEventListener("input",z),e.querySelector("#side").addEventListener("click",w=>{let k=e.querySelector("#sbs");k.hidden=!k.hidden,e.querySelector("#compare").hidden=!k.hidden,v.parentElement.hidden=!k.hidden,w.currentTarget.textContent=k.hidden?"Show side by side":"Show slider"}),e.querySelector("#score").addEventListener("click",async()=>{let w=e.querySelector("#score-out");w.innerHTML=`<div class="loader" role="status">${G({size:36,className:"busy"})}<p>Analyzing both photos on this device\u2026</p></div>`;try{let[k,g]=await Promise.all([c.value,h.value].map(async A=>(await Le(X(await Cn(T(A).dataUrl),900))).result)),x=Object.keys($t).filter(A=>k.concerns[A]&&g.concerns[A]).map(A=>{let Q=g.concerns[A].score-k.concerns[A].score,Ee=Math.abs(Q)<5?"about the same":Q<0?"improved":"higher";return`<tr><th scope="row">${$t[A]}</th><td>${k.concerns[A].score}</td><td>${g.concerns[A].score}</td><td>${Ee} (${Q>0?"+":""}${Q})</td></tr>`}).join("");w.innerHTML=`<table class="table"><caption>Skin scores, 0 to 100 (lower is better)</caption><thead><tr><th scope="col">Area</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Change</th></tr></thead><tbody>${x}</tbody></table>
+            <p class="small muted">Differences in lighting between photos can change scores. Small changes are normal day to day.</p>`}catch(k){w.innerHTML=`<p class="error" role="alert">${u(k.message)}</p>`}}),$(),z()};return n(),()=>B()}};function Te(e,t,n,a,o,s){let c=e.length*36,h=e.map((m,d)=>{let b=Number(t[m]?.[n])||0,f=Math.round(Math.min(b,a)/a*120);return`<g><rect x="${d*36}" y="${120-f}" width="28" height="${f}" rx="4" class="bar"></rect>
+        <text x="${d*36+28/2}" y="134" text-anchor="middle" class="axis">${m.slice(8)}</text>
+        ${b?`<text x="${d*36+28/2}" y="${120-f-4}" text-anchor="middle" class="val">${b}</text>`:""}</g>`}).join("");return`<figure class="chart"><svg viewBox="0 -14 ${c} 152" role="img" aria-label="${u(o)} over the last ${e.length} days. Details in the table below." preserveAspectRatio="xMinYMid meet">${h}</svg><figcaption>${u(o)} (${u(s)}) by day of month</figcaption></figure>`}var St={title:"Lifestyle",render(e){let t=(n=R())=>{let a=y.get(),o=a.lifestyle[n]||{},s=Ce(14),i=gt(a.lifestyle),r=(h,m,d,b="")=>`<div class="field"><label for="${h}">${m}</label><input type="number" inputmode="decimal" id="${h}" name="${h}" value="${u(o[h]??"")}" ${d} ${b?`aria-describedby="${h}-hint"`:""} />${b?`<p class="hint" id="${h}-hint">${b}</p>`:""}</div>`,l=(h,m,d,b)=>`<fieldset class="scale"><legend>${m}</legend><div class="options inline">${[1,2,3,4,5].map(f=>`<label class="check"><input type="radio" name="${h}" value="${f}" ${String(o[h])===String(f)?"checked":""} /> <span>${f}${f===1?` \xB7 ${d}`:f===5?` \xB7 ${b}`:""}</span></label>`).join("")}</div></fieldset>`;e.innerHTML=`
+        <h1>Lifestyle</h1>
+        <p class="lead">Log food, exercise, sleep and how your skin feels. After a week, DermaLogic looks for patterns in your own data.</p>
+
+        <form id="l-form" class="card form" aria-labelledby="log-h">
+          <h2 id="log-h">Daily log</h2>
+          <div class="field"><label for="date">Date</label><input type="date" id="date" name="date" value="${n}" max="${R()}" /></div>
+          <h3>Sleep</h3>
+          <div class="grid-2">
+            ${r("sleepHours","Hours slept",'min="0" max="24" step="0.5"')}
+            ${l("sleepQuality","Sleep quality","poor","great")}
+          </div>
+          <h3>Food and drink</h3>
+          ${r("waterGlasses","Glasses of water",'min="0" max="30" step="1"')}
+          <fieldset><legend>What did you have today? <span class="muted">(choose any)</span></legend>
+            <div class="options cols-2">${Object.entries(He).map(([h,m])=>`<label class="check"><input type="checkbox" data-multi name="foods" value="${h}" ${(o.foods||[]).includes(h)?"checked":""} /> <span>${u(m)}</span></label>`).join("")}</div>
+          </fieldset>
+          <div class="field"><label for="meals">Meals <span class="muted">(optional)</span></label><textarea id="meals" name="meals" rows="2">${u(o.meals||"")}</textarea></div>
+          <h3>Exercise</h3>
+          <div class="grid-2">
+            ${r("exerciseMin","Minutes of exercise",'min="0" max="600" step="5"')}
+            <div class="field"><label for="exerciseType">Type</label><select id="exerciseType" name="exerciseType">${mt.map(h=>`<option ${o.exerciseType===h?"selected":""}>${h}</option>`).join("")}</select></div>
+          </div>
+          <h3>Wellbeing and skin</h3>
+          ${l("stress","Stress level","calm","very stressed")}
+          ${l("skinRating","How does your skin look and feel today?","very bad","great")}
+          <div class="field"><label for="lnotes">Notes</label><textarea id="lnotes" name="notes" rows="2">${u(o.notes||"")}</textarea></div>
+          <button class="btn btn-primary" type="submit">Save log</button>
+        </form>
+
+        <section class="card" aria-labelledby="ins-h">
+          <h2 id="ins-h">Your patterns</h2>
+          ${i.ready?i.insights.length?`<ul>${i.insights.map(h=>`<li>${u(h.text)}</li>`).join("")}</ul><p class="small muted">These are patterns in your own logs, not proof of cause. Try changing one thing for two weeks and see if it holds.</p>`:"<p>No strong patterns yet. Keep logging; patterns become clearer over a few weeks.</p>":`<p>Log at least ${i.needed} days that include a skin rating to see patterns. You have ${i.daysLogged} so far.</p>`}
+        </section>
+
+        <section class="card" aria-labelledby="chart-h">
+          <h2 id="chart-h">Last 14 days</h2>
+          <div class="grid-2">
+            ${Te(s,a.lifestyle,"sleepHours",10,"Sleep","hours")}
+            ${Te(s,a.lifestyle,"skinRating",5,"Skin rating","1 to 5")}
+            ${Te(s,a.lifestyle,"waterGlasses",12,"Water","glasses")}
+            ${Te(s,a.lifestyle,"exerciseMin",90,"Exercise","minutes")}
+          </div>
+          <details><summary>Show as a table</summary>
+            <table class="table"><caption class="sr-only">Lifestyle logs for the last 14 days</caption>
+              <thead><tr><th scope="col">Date</th><th scope="col">Sleep (h)</th><th scope="col">Water</th><th scope="col">Exercise (min)</th><th scope="col">Stress</th><th scope="col">Skin</th></tr></thead>
+              <tbody>${s.map(h=>{let m=a.lifestyle[h]||{};return`<tr><th scope="row">${L(h)}</th><td>${u(m.sleepHours??"\u2013")}</td><td>${u(m.waterGlasses??"\u2013")}</td><td>${u(m.exerciseMin??"\u2013")}</td><td>${u(m.stress??"\u2013")}</td><td>${u(m.skinRating??"\u2013")}</td></tr>`}).join("")}</tbody>
+            </table>
+          </details>
+        </section>`;let c=e.querySelector("#l-form");c.querySelector("#date").addEventListener("change",h=>t(h.target.value||R())),c.addEventListener("submit",h=>{h.preventDefault();let m=U(c),d=m.date||R();delete m.date,y.update(b=>b.lifestyle[d]={...b.lifestyle[d]||{},...m,savedAt:new Date().toISOString()}),C(`Saved your log for ${L(d)}.`),t(d),e.querySelector("#ins-h").focus?.()})};t()}};var Tn=["Cleanser","Toner","Serum","Moisturizer","Sunscreen","Treatment / spot","Mask","Body lotion","Lightening cream","Other"],Lt={high:"high amount",medium:"medium amount",low:"small amount"};function An(e,t){return`
+    <h4>${e.outcome==="worked"?"Why it probably worked":"Why it may not have worked"}</h4>
+    ${e.outcome==="worked"?I(t.good):I(t.reasons)}
+    ${t.watch.length?`<div class="callout callout-danger" role="note"><strong>Watch out:</strong>${I(t.watch)}</div>`:""}
+    <details><summary>Ingredients we recognized (${t.matched.length})</summary>
+      <ul class="chips">${t.matched.map(a=>`<li title="${u(Lt[a.band])}">${u(a.name)} <span class="sr-only">(${u(Lt[a.band])})</span></li>`).join("")}</ul>
+      ${t.unknown.length?`<p class="small muted">Not in our database: ${u(t.unknown.join(", "))}</p>`:""}
+    </details>`}var Ct={title:"Ingredient checker",render(e){let t=n=>{let a=y.get(),o=a.profile||{},s=it(a.products);e.innerHTML=`
+        <h1>Ingredient checker</h1>
+        <p class="lead">Add products you have used and what happened. DermaLogic explains which ingredients likely made it work or not, and spots patterns across products.</p>
+
+        <form id="i-form" class="card form" aria-labelledby="add-h">
+          <h2 id="add-h">Add a product</h2>
+          <div class="grid-2">
+            <div class="field"><label for="pname">Product name</label><input id="pname" name="name" required /></div>
+            <div class="field"><label for="ptype">Type</label><select id="ptype" name="type">${Tn.map(i=>`<option>${i}</option>`).join("")}</select></div>
+          </div>
+          <div class="field">
+            <label for="pingredients">Ingredient list</label>
+            <textarea id="pingredients" name="ingredients" rows="5" required aria-describedby="ping-hint" placeholder="Aqua, Glycerin, Niacinamide, Cetearyl Alcohol, \u2026"></textarea>
+            <p class="hint" id="ping-hint">Copy it from the packaging or the brand's website, separated by commas.</p>
+          </div>
+          <fieldset><legend>What happened?</legend>
+            <div class="options">${Object.entries(Re).map(([i,r],l)=>`<label class="check"><input type="radio" name="outcome" value="${i}" ${l===0?"checked":""} /> <span>${u(r)}</span></label>`).join("")}</div>
+          </fieldset>
+          <div class="field"><label for="weeks">How many weeks did you use it?</label><input type="number" id="weeks" name="weeksUsed" min="0" max="520" step="1" /></div>
+          <p class="error" id="i-error" role="alert"></p>
+          <button class="btn btn-primary" type="submit">Explain the result</button>
+        </form>
+
+        ${s.suspects.length||s.friends.length?`<section class="card card-accent" aria-labelledby="pat-h"><h2 id="pat-h">Patterns across your products</h2>
+                ${s.suspects.length?`<h3>Possible triggers</h3><p class="small">These appear in 2 or more products that gave you a bad result, and in none that worked.</p><ul>${s.suspects.map(i=>`<li><strong>${u(i.name)}</strong> in ${u([...new Set(i.products)].join(", "))}</li>`).join("")}</ul>`:""}
+                ${s.friends.length?`<h3>Ingredients that seem to suit you</h3><ul>${s.friends.map(i=>`<li><strong>${u(i.name)}</strong> in ${u([...new Set(i.products)].join(", "))}</li>`).join("")}</ul>`:""}
+              </section>`:""}
+
+        <section aria-labelledby="list-h">
+          <h2 id="list-h">Your products (${a.products.length})</h2>
+          ${a.products.slice().reverse().map(i=>{let r=je(i,o);return`<article class="card" aria-labelledby="p-${i.id}">
+                <h3 id="p-${i.id}" tabindex="-1">${u(i.name)} <span class="muted small">\xB7 ${u(i.type)}</span></h3>
+                <p><span class="badge ${i.outcome==="worked"?"badge-low":i.outcome==="no-change"?"badge-moderate":"badge-noticeable"}">${u(Re[i.outcome])}</span> <span class="small muted">added ${L(i.createdAt)}${i.weeksUsed?` \xB7 used ${u(i.weeksUsed)} weeks`:""}</span></p>
+                ${An(i,r)}
+                <div class="btn-row">
+                  <button type="button" class="btn btn-small btn-ghost" data-read="${i.id}">Read aloud</button>
+                  <button type="button" class="btn btn-small btn-ghost" data-del="${i.id}" aria-label="Delete ${u(i.name)}">Delete</button>
+                </div>
+              </article>`}).join("")}
+        </section>
+
+        <section class="card" aria-labelledby="look-h">
+          <h2 id="look-h">Look up one ingredient</h2>
+          <form id="lookup" class="inline-form">
+            <label for="lq" class="sr-only">Ingredient name</label>
+            <input id="lq" placeholder="e.g. niacinamide" />
+            <button class="btn" type="submit">Look up</button>
+          </form>
+          <p id="lookup-out" aria-live="polite"></p>
+        </section>`,e.querySelector("#i-form").addEventListener("submit",i=>{i.preventDefault();let r=U(i.currentTarget);if(!r.name.trim()||!r.ingredients.trim()){e.querySelector("#i-error").textContent="Please add the product name and its ingredient list.";return}let l={id:Y(),...r,createdAt:new Date().toISOString()};y.update(c=>c.products.push(l)),C("Product added. Here is what we found."),t(l.id)}),e.querySelectorAll("[data-del]").forEach(i=>i.addEventListener("click",()=>{confirm("Delete this product?")&&(y.update(r=>r.products=r.products.filter(l=>l.id!==i.dataset.del)),t())})),e.querySelectorAll("[data-read]").forEach(i=>i.addEventListener("click",()=>{let r=y.get().products.find(c=>c.id===i.dataset.read),l=je(r,o);P(`${r.name}. ${(r.outcome==="worked"?l.good:l.reasons).join(" ")} ${l.watch.join(" ")}`,{rate:y.get().settings.rate})})),e.querySelector("#lookup").addEventListener("submit",i=>{i.preventDefault();let r=e.querySelector("#lq").value,l=le(r);e.querySelector("#lookup-out").textContent=l?ge(l):`"${r}" is not in our database yet.`}),n&&e.querySelector(`#p-${n}`)?.focus()};t()}};var En=["Read my morning routine","What is niacinamide?","How do I fade dark spots?","My skin is itching","I used to bleach my skin","What is my skin tone?","Help"],Tt={title:"Assistant",render(e,{navigate:t}){let n=()=>y.get(),a=!1;e.innerHTML=`
+      <h1>Assistant</h1>
+      <p class="lead">Ask about your routine, ingredients or a skin problem by typing or with your voice. Answers come from DermaLogic's built-in skin-care guide on this device.</p>
+
+      <section class="card voice-controls" aria-labelledby="vc-h">
+        <h2 id="vc-h" class="sr-only">Voice settings</h2>
+        <label class="check"><input type="checkbox" id="speak" ${n().settings.speak?"checked":""} /> <span>Read replies aloud</span></label>
+        <label class="check"><input type="checkbox" id="handsfree" ${_.input?"":"disabled"} /> <span>Hands-free conversation (listen again after each reply)</span></label>
+        <div class="field inline">
+          <label for="rate">Speaking speed <output id="rate-out">${n().settings.rate}</output>\xD7</label>
+          <input type="range" id="rate" min="0.6" max="1.8" step="0.1" value="${n().settings.rate}" />
+        </div>
+        <button type="button" class="btn btn-ghost btn-small" id="stop-speak">Stop speaking</button>
+        ${_.input?"":'<p class="small muted">Voice input is not supported in this browser. Typing and spoken replies still work.</p>'}
+      </section>
+
+      <div class="chat-log" id="log" role="log" aria-live="polite" aria-label="Conversation" tabindex="0"></div>
+
+      <form id="chat-form" class="chat-form">
+        <label for="msg" class="sr-only">Your message</label>
+        <input id="msg" autocomplete="off" placeholder="Type a question\u2026" />
+        <button type="button" class="btn btn-voice" id="mic" aria-pressed="false" ${_.input?"":"disabled"}>
+          <span aria-hidden="true">\u{1F399}</span> <span class="mic-label">Speak</span>
+        </button>
+        <button class="btn btn-primary" type="submit">Send</button>
+      </form>
+      <div class="suggestions" role="group" aria-label="Suggested questions">
+        ${En.map(m=>`<button type="button" class="chip-btn" data-q="${u(m)}">${u(m)}</button>`).join("")}
+      </div>
+      <button type="button" class="btn btn-ghost btn-small" id="clear">Clear conversation</button>
+    `;let o=e.querySelector("#log"),s=e.querySelector("#msg"),i=e.querySelector("#mic"),r=()=>{let m=n().chat.slice(-60);o.innerHTML=m.length?m.map(d=>`<div class="msg msg-${d.role} ${d.urgent?"msg-urgent":""}">${d.role==="bot"?G({size:28}):""}<span class="sr-only">${d.role==="user"?"You said":"DermaLogic said"}:</span><p>${u(d.text).replace(/\n/g,"<br />")}</p></div>`).join(""):'<p class="muted">Say or type "help" to hear what I can do.</p>',o.scrollTop=o.scrollHeight},l=(m,d=!1)=>{if(!m.trim())return;let b=n(),f=fe(m,{profile:b.profile,analysis:b.analyses.at(-1)?.result,reminders:b.reminders});y.update($=>{$.chat.push({role:"user",text:m,at:new Date().toISOString()}),$.chat.push({role:"bot",text:f.text,at:new Date().toISOString(),urgent:!!f.urgent})}),r(),f.urgent&&D(f.text,!0);let v=d||n().settings.speak,T=()=>{f.action?.navigate?t(f.action.navigate):a&&d&&h()};v?P(f.text,{rate:n().settings.rate,onEnd:T}):T()},c=m=>{i.setAttribute("aria-pressed",String(m)),i.classList.toggle("listening",m),i.querySelector(".mic-label").textContent=m?"Listening\u2026 tap to stop":"Speak"};function h(){we(),c(!0),D("Listening"),ye({onInterim:m=>s.value=m,onResult:m=>{s.value="",l(m,!0)},onError:m=>C(m,"error"),onEnd:()=>c(!1)})}return i.addEventListener("click",()=>be()?J():h()),e.querySelector("#chat-form").addEventListener("submit",m=>{m.preventDefault();let d=s.value;s.value="",l(d),s.focus()}),e.querySelectorAll("[data-q]").forEach(m=>m.addEventListener("click",()=>l(m.dataset.q))),e.querySelector("#speak").addEventListener("change",m=>y.update(d=>d.settings.speak=m.target.checked)),e.querySelector("#handsfree").addEventListener("change",m=>{a=m.target.checked,a&&(y.update(d=>d.settings.speak=!0),e.querySelector("#speak").checked=!0,h())}),e.querySelector("#rate").addEventListener("input",m=>{let d=Number(m.target.value);e.querySelector("#rate-out").textContent=d,y.update(b=>b.settings.rate=d)}),e.querySelector("#stop-speak").addEventListener("click",we),e.querySelector("#clear").addEventListener("click",()=>{y.update(m=>m.chat=[]),r(),D("Conversation cleared.")}),r(),()=>{J(),we()}}};var At={title:"Reminders",render(e){let t=()=>{let n=y.get().reminders,a="Notification"in window?Notification.permission:"unsupported",o=y.get().complaints.filter(s=>!s.resolved&&s.nextFollowUp);e.innerHTML=`
+        <h1>Reminders</h1>
+        <p class="lead">Daily nudges for your routine and check-ins. Reminders fire while DermaLogic is open in a tab or installed as an app.</p>
+        <form id="r-form" class="card form">
+          <label class="check"><input type="checkbox" name="enabled" ${n.enabled?"checked":""} /> <span><strong>Turn on daily reminders</strong></span></label>
+          <div class="grid-2">
+            <div class="field"><label for="am">Morning routine</label><input type="time" id="am" name="am" value="${u(n.am)}" /></div>
+            <div class="field"><label for="pm">Evening routine</label><input type="time" id="pm" name="pm" value="${u(n.pm)}" /></div>
+            <div class="field"><label for="ls">Daily check-in (lifestyle and photo)</label><input type="time" id="ls" name="lifestyle" value="${u(n.lifestyle)}" /></div>
+          </div>
+          <label class="check"><input type="checkbox" name="sunscreen" ${n.sunscreen?"checked":""} /> <span>Sunscreen top-up reminders at 11:00, 13:00 and 15:00</span></label>
+          <p class="small muted">System notifications: ${a==="granted"?"allowed.":a==="denied"?"blocked in your browser settings. You will still see in-app alerts.":a==="unsupported"?"not supported here. You will see in-app alerts.":"not yet allowed."}</p>
+          <div class="btn-row">
+            <button class="btn btn-primary" type="submit">Save reminders</button>
+            ${a==="default"?'<button type="button" class="btn" id="perm">Allow notifications</button>':""}
+            <button type="button" class="btn btn-ghost" id="test">Send a test reminder</button>
+          </div>
+        </form>
+
+        <section class="card" aria-labelledby="fu-h">
+          <h2 id="fu-h">Upcoming follow-ups</h2>
+          ${o.length?`<ul>${o.map(s=>`<li>${u(s.label)}: ${L(s.nextFollowUp)}</li>`).join("")}</ul>`:'<p class="muted">No follow-ups scheduled. Log a complaint to get check-ins.</p>'}
+        </section>`,e.querySelector("#r-form").addEventListener("submit",async s=>{s.preventDefault();let i=U(s.currentTarget);y.update(r=>r.reminders={...r.reminders,...i}),i.enabled&&"Notification"in window&&Notification.permission==="default"&&await Notification.requestPermission(),C(i.enabled?"Reminders saved and turned on.":"Reminders saved. They are turned off."),t()}),e.querySelector("#perm")?.addEventListener("click",async()=>{await Notification.requestPermission(),t()}),e.querySelector("#test").addEventListener("click",()=>{"Notification"in window&&Notification.permission==="granted"&&new Notification("DermaLogic",{body:"This is how your reminders will look.",icon:"assets/icon.svg"}),C("Test reminder: this is how your reminders will look.")})};t()}};var Et={title:"Settings & privacy",render(e){let t=y.get().settings;e.innerHTML=`
+      <h1>Settings &amp; privacy</h1>
+
+      <section class="card" aria-labelledby="a11y-h">
+        <h2 id="a11y-h">Accessibility</h2>
+        <label class="check"><input type="checkbox" id="hc" ${t.highContrast?"checked":""} /> <span>High contrast</span></label>
+        <label class="check"><input type="checkbox" id="lt" ${t.largeText?"checked":""} /> <span>Larger text</span></label>
+        <label class="check"><input type="checkbox" id="sp" ${t.speak?"checked":""} /> <span>Read assistant replies and results aloud</span></label>
+        <p class="small muted">Press <kbd>Alt</kbd> + <kbd>V</kbd> on any page to ask a question by voice. Voice answers are always spoken.</p>
+      </section>
+
+      <section class="card" aria-labelledby="priv-h">
+        <h2 id="priv-h">Your data</h2>
+        <p>Everything you enter, including photos, is stored only in this browser on this device. Face analysis runs on your device. The face-detection model is downloaded once from a public CDN; your photos are never uploaded.</p>
+        <p class="small muted">Voice input uses your browser's speech recognition. In some browsers (for example Chrome), audio is sent to the browser maker's speech service to turn it into text.</p>
+        <div class="btn-row">
+          <button type="button" class="btn" id="export">Export my data</button>
+          <label class="btn file-btn">Import data<input type="file" id="import" accept="application/json" class="sr-only" /></label>
+          <button type="button" class="btn btn-danger" id="reset">Delete all my data</button>
+        </div>
+        <p class="small muted">Export includes your profile, logs and products. Photos are not included, to keep the file small.</p>
+      </section>
+
+      <section class="card" aria-labelledby="disc-h">
+        <h2 id="disc-h">Medical disclaimer</h2>
+        <p>${pe}</p>
+      </section>
+    `;let n=(a,o)=>e.querySelector(a).addEventListener("change",s=>y.update(i=>i.settings[o]=s.target.checked));n("#hc","highContrast"),n("#lt","largeText"),n("#sp","speak"),e.querySelector("#export").addEventListener("click",()=>{let a=new Blob([y.exportJSON()],{type:"application/json"}),o=document.createElement("a");o.href=URL.createObjectURL(a),o.download=`dermalogic-export-${new Date().toISOString().slice(0,10)}.json`,o.click(),URL.revokeObjectURL(o.href)}),e.querySelector("#import").addEventListener("change",async a=>{let o=a.target.files?.[0];if(o)try{y.importJSON(await o.text()),C("Data imported.")}catch{C("That file could not be imported.","error")}}),e.querySelector("#reset").addEventListener("click",async()=>{confirm("Delete all DermaLogic data and photos from this device? This cannot be undone.")&&(await y.reset(),await O.clear(),C("All data deleted."),location.hash="#/home")})}};var Dt={home:yt,analyze:bt,profile:wt,routine:vt,complaints:kt,progress:xt,lifestyle:St,ingredients:Ct,chat:Tt,reminders:At,settings:Et},Ae=null;function zt(e){location.hash=`#/${e}`}function Be(){let e=location.hash.replace(/^#\/?/,"").split("?")[0];return Dt[e]?e:"home"}async function Ue(){let e=Be(),t=Dt[e];typeof Ae=="function"&&Ae(),Ae=null,B(),We("#primary-nav a").forEach(o=>{o.dataset.route===e?o.setAttribute("aria-current","page"):o.removeAttribute("aria-current")}),qt();let n=H("#view");n.innerHTML="",document.title=`${t.title} \xB7 DermaLogic`,Ae=await t.render(n,{navigate:zt}),Nt();let a=n.querySelector("h1");a&&(a.setAttribute("tabindex","-1"),a.focus({preventScroll:!1})),D(`${t.title} page`)}function Nt(){let e=H("#banners"),t=ie(y.get().complaints);if(!t.length||Be()==="complaints"){e.innerHTML="";return}e.innerHTML=`<div class="banner" role="region" aria-label="Follow-ups due">
+    <p><strong>Follow-up:</strong> How is your ${u(t[0].label.toLowerCase())} now?${t.length>1?` (and ${t.length-1} more)`:""}</p>
+    <a class="btn btn-small" href="#/complaints">Check in</a>
+  </div>`}function Mt(){let e=y.get(),t=R(),n=Je(new Date,e.reminders,t);for(let o of n){if(y.update(s=>s.reminders.lastFired[o.id]=t),"Notification"in window&&Notification.permission==="granted")try{new Notification(`DermaLogic: ${o.title}`,{body:o.body,icon:"assets/icon.svg",tag:o.id})}catch{}C(`${o.title}: ${o.body}`),e.settings.speak&&P(`${o.title}. ${o.body}`,{rate:e.settings.rate})}ie(e.complaints).length&&Nt()}function Mn(){let e=H("#voice-fab");_.input||(e.title="Voice input is not supported in this browser");let t=()=>{if(be()){J();return}if(!_.input){C('Voice input is not supported in this browser. Open the Assistant to type instead, and turn on "Read replies aloud" to hear answers.',"error");return}e.classList.add("listening"),e.setAttribute("aria-pressed","true"),D("Listening. Speak now."),ye({onResult:n=>In(n),onError:n=>C(n,"error"),onEnd:()=>{e.classList.remove("listening"),e.setAttribute("aria-pressed","false")}})};e.addEventListener("click",t),document.addEventListener("keydown",n=>{n.altKey&&(n.key==="v"||n.key==="V")&&(n.preventDefault(),t())})}function In(e){let t=y.get(),n=fe(e,{profile:t.profile,analysis:t.analyses.at(-1)?.result,reminders:t.reminders});y.update(a=>{a.chat.push({role:"user",text:e,at:new Date().toISOString()}),a.chat.push({role:"bot",text:n.text,at:new Date().toISOString(),urgent:!!n.urgent})}),P(n.text,{rate:t.settings.rate}),n.action?.navigate?zt(n.action.navigate):Be()==="chat"?Ue():C(n.text.split(`
+`)[0])}function qt(){H("#menu-toggle").setAttribute("aria-expanded","false"),H("#primary-nav").classList.remove("open")}function It(){let{settings:e}=y.get();document.documentElement.classList.toggle("high-contrast",!!e.highContrast),document.documentElement.classList.toggle("large-text",!!e.largeText)}function Dn(){H("#brand-icon").innerHTML=G({variant:"logo",size:34}),It(),y.subscribe(It),H("#menu-toggle").addEventListener("click",t=>{let n=t.currentTarget.getAttribute("aria-expanded")!=="true";t.currentTarget.setAttribute("aria-expanded",String(n)),H("#primary-nav").classList.toggle("open",n)}),document.addEventListener("keydown",t=>{t.key==="Escape"&&qt()}),Mn(),window.addEventListener("hashchange",Ue),Ue();let e=H("#disclaimer");!y.get().settings.acceptedDisclaimer&&e?.showModal&&(e.showModal(),e.addEventListener("close",()=>y.update(t=>t.settings.acceptedDisclaimer=!0),{once:!0})),Mt(),setInterval(Mt,3e4),"serviceWorker"in navigator&&location.protocol!=="file:"&&navigator.serviceWorker.register("sw.js").catch(()=>{})}Dn();export{In as handleVoiceQuery,zt as navigate};
+
+</script>
+  </body>
+</html>

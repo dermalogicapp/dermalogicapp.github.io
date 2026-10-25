@@ -1,6 +1,6 @@
 # DermaLogic
 
-A private, on-device skincare web app. It estimates skin tone and visible concerns from a face photo, builds a personalized routine, tracks complaints, progress photos and lifestyle, explains why products worked or didn't from their ingredients, and includes a voice-enabled assistant for visually impaired users.
+A skincare web app with accounts, onboarding, a dashboard and optional YouCam AI skin analysis. It estimates skin tone and visible concerns from a face photo, builds a personalized routine, tracks complaints, progress photos and lifestyle, explains why products worked or didn't from their ingredients, and includes a voice-enabled assistant for visually impaired users.
 
 > **Not medical advice.** DermaLogic gives general skin-care information and camera-based estimates. It is not a medical device and does not diagnose or treat any condition.
 
@@ -26,7 +26,7 @@ Nothing needs installing. You only need Node.js 18 or newer.
 ```bash
 node tools/serve.mjs     # or: npm start
 npm test                 # unit tests
-npm run build            # rebuilds DermaLogic.html (run `npm install` first to get esbuild)
+npm run build:standalone            # rebuilds DermaLogic.html (run `npm install` first to get esbuild)
 ```
 
 ### If something goes wrong
@@ -38,6 +38,26 @@ npm run build            # rebuilds DermaLogic.html (run `npm install` first to 
 | `EADDRINUSE` / port already in use | Another copy is already running. Close the other window, or use the address it printed. |
 | Blank page when opening `index.html` directly | Browsers block `index.html` opened straight from the folder. Open `DermaLogic.html` instead, or use `start.bat`. |
 | Camera or microphone doesn't work | Allow access when the browser asks. Voice input needs Chrome, Edge or Safari. |
+
+## What's new in v2
+
+- **Landing page, log in / sign up, onboarding wizard and a redesigned dashboard**, with scroll animations, progress rings, an animated scan screen and a celebratory finish.
+- **YouCam AI skin analysis** (opt-in). A serverless function (`api/youcam.js`) keeps your YouCam API key secret. The scan sends a cropped face photo to YouCam and shows its 8 checks (acne, dark spots, dark circles, hydration, oiliness, pores, redness, texture). Skin tone is always measured on the device. If YouCam isn't set up or fails, the app falls back to the on-device analysis and says so.
+- **Email and password accounts.** By default these are *demo accounts* stored only in the browser. Add Supabase keys for real accounts (below). Each account has its own data and photos on the device.
+
+### Turn on YouCam (Vercel)
+
+1. Get an API key from the YouCam API console (Perfect Corp.).
+2. In Vercel: project, **Settings, Environment Variables**, add `YOUCAM_API_KEY`. Redeploy.
+3. Optional but recommended with real accounts: also add `SUPABASE_URL` and `SUPABASE_ANON_KEY` there, so only signed-in users can spend your credits.
+
+Each scan uses 8 standard-definition checks (12 credits on YouCam's standard tier at the time of writing; check your plan). The function allows 6 scans per IP per minute per server instance. Cloud analysis cannot work from `DermaLogic.html`, `start.bat` or GitHub Pages, because those have no server function; they use the on-device analysis.
+
+### Turn on real accounts (Supabase)
+
+1. Create a free project at supabase.com. Under **Authentication, Providers**, keep Email on. For the simplest sign-up, turn off "Confirm email" (otherwise users get a confirmation email first).
+2. Copy the project URL and the `anon` public key into `js/config.js` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`). The anon key is meant to be public.
+3. Redeploy. Log in, sign-up and password reset now use Supabase. Skincare data still stays on the user's device.
 
 ## Features
 
@@ -68,8 +88,10 @@ npm run build            # rebuilds DermaLogic.html (run `npm install` first to 
 
 ## Privacy
 
-- All data stays in the browser (localStorage for records, IndexedDB for photos). There is no server.
-- Photos are analyzed on the device. The MediaPipe model and WASM are downloaded from public CDNs (jsDelivr, Google Storage); images are never uploaded.
+- Records (localStorage) and progress photos (IndexedDB) stay in the browser, separately for each account.
+- Skin tone and face detection run on the device. The MediaPipe model and WASM are downloaded from public CDNs (jsDelivr, Google Storage).
+- **Only if the user turns on YouCam analysis**, the cropped face photo of that scan is sent to the DermaLogic serverless function and on to YouCam (Perfect Corp.). DermaLogic does not store it. A face image is sensitive biometric data in many places, so show your own privacy policy and get consent where the law requires it.
+- Demo accounts store a salted PBKDF2 password hash in the browser. Real accounts store credentials with Supabase.
 - Voice input uses the browser's Web Speech API. In Chrome, speech audio is sent to Google to be turned into text. Spoken replies are generated locally.
 
 ## Limitations
@@ -96,6 +118,12 @@ js/ingredients.js     INCI parser and "why it worked or didn't" explainer
 js/chatbot.js         Assistant intents
 js/voice.js           Speech recognition and synthesis
 js/icon.js            Animated droplet icon (SVG)
+js/auth.js            Email/password accounts (Supabase or demo mode)
+js/youcam.js          Face crop, YouCam client, score mapping
+js/score.js, routes.js, fx.js, icons.js   Dashboard maths, routing rules, animations, icons
+js/config.js          Supabase and endpoint settings
+api/youcam.js         Vercel function that calls YouCam (key stays here)
+css/v2.css            Landing, auth, onboarding, dashboard styles
 js/reminders.js       Reminder and follow-up scheduling
 js/lifestyle.js       Habit and skin pattern finding
 js/data/              Ingredient database and skin-care knowledge

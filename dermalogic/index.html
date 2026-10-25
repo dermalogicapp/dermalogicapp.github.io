@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DermaLogic</title>
+    <meta name="description" content="DermaLogic: private, on-device skin analysis, personalized routines, progress tracking and a voice-enabled skincare assistant." />
+    <meta name="theme-color" content="#7b1e3a" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="app-header">
+      <div class="brand">
+        <span id="brand-icon"><img src="assets/icon.svg" alt="" width="34" height="34" /></span>
+        <span class="brand-name">DermaLogic</span>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="voice-fab" class="btn btn-voice" aria-label="Ask by voice" aria-describedby="voice-hint">
+          <span aria-hidden="true">🎙</span> <span><span class="hide-sm">Ask by </span>voice</span>
+        </button>
+        <span id="voice-hint" class="sr-only">Keyboard shortcut: Alt plus V</span>
+        <button type="button" id="menu-toggle" class="btn btn-ghost menu-toggle" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav id="primary-nav" class="primary-nav" aria-label="Main">
+        <ul>
+          <li><a href="#/home" data-route="home">Today</a></li>
+          <li><a href="#/analyze" data-route="analyze">Face scan</a></li>
+          <li><a href="#/profile" data-route="profile">Skin profile</a></li>
+          <li><a href="#/routine" data-route="routine">My routine</a></li>
+          <li><a href="#/complaints" data-route="complaints">Complaints</a></li>
+          <li><a href="#/progress" data-route="progress">Progress photos</a></li>
+          <li><a href="#/lifestyle" data-route="lifestyle">Lifestyle</a></li>
+          <li><a href="#/ingredients" data-route="ingredients">Ingredient checker</a></li>
+          <li><a href="#/chat" data-route="chat">Assistant</a></li>
+          <li><a href="#/reminders" data-route="reminders">Reminders</a></li>
+          <li><a href="#/settings" data-route="settings">Settings &amp; privacy</a></li>
+        </ul>
+      </nav>
+
+      <main id="main" tabindex="-1">
+        <div id="banners" aria-live="polite"></div>
+        <div id="view"></div>
+      </main>
+    </div>
+
+    <footer class="app-footer">
+      <p><strong>Not medical advice.</strong> DermaLogic gives general skin-care information and camera-based estimates. It does not diagnose or treat any condition. See a doctor or dermatologist for anything painful, spreading, bleeding or changing.</p>
+      <p>Your photos and data stay on this device.</p>
+    </footer>
+
+    <!-- Toasts are visual; the same text is announced through #sr-status / #sr-alert. -->
+    <div id="toasts" class="toasts" aria-hidden="true"></div>
+    <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+    <div id="sr-alert" class="sr-only" role="alert" aria-live="assertive"></div>
+
+    <dialog id="disclaimer" aria-labelledby="disclaimer-title" aria-describedby="disclaimer-body">
+      <h2 id="disclaimer-title">Before you start</h2>
+      <div id="disclaimer-body">
+        <p>DermaLogic gives general skin-care information and estimates from your camera. <strong>It is not a medical device and is not medical advice.</strong> It cannot diagnose skin conditions, and results depend on lighting and camera quality.</p>
+        <p>Photos are analyzed on this device and are not uploaded. Your data is saved only in this browser.</p>
+        <p>If you have a painful, spreading, bleeding or changing skin problem, or signs of an allergic reaction such as swelling of the face, lips or throat, seek medical care.</p>
+      </div>
+      <form method="dialog">
+        <button class="btn btn-primary" value="ok" autofocus>I understand</button>
+      </form>
+    </dialog>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

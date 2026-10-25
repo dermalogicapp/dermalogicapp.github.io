@@ -8,12 +8,13 @@ const read = (p) => readFileSync(root + p, 'utf8');
 
 const result = await build({ entryPoints: [root + 'js/app.js'], bundle: true, format: 'esm', minify: true, write: false, target: 'es2020' });
 const js = result.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
-const css = read('css/styles.css');
+const css = read('css/styles.css') + '\n' + read('css/v2.css');
 const icon = 'data:image/svg+xml;base64,' + Buffer.from(read('assets/icon.svg')).toString('base64');
 
 let html = read('index.html')
   .replace(/<link rel="manifest"[^>]*>\s*/, '')
   .replace(/<link rel="icon"[^>]*>/, `<link rel="icon" href="${icon}" type="image/svg+xml" />`)
+  .replace(/<link rel="stylesheet" href="css\/v2.css" \/>\s*/, '')
   .replace(/<link rel="stylesheet" href="css\/styles.css" \/>/, () => `<style>\n${css}\n</style>`)
   .replace(/src="assets\/icon.svg"/g, `src="${icon}"`)
   .replace(/<script type="module" src="js\/app.js"><\/script>/, () => `<script type="module">\n${js}\n</script>`);

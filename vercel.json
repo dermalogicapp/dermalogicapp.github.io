@@ -2,5 +2,8 @@
   "framework": null,
   "installCommand": null,
   "buildCommand": null,
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "functions": {
+    "api/youcam.js": { "maxDuration": 40 }
+  }
 }

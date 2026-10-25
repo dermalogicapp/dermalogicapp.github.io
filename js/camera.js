@@ -1,5 +1,5 @@
 // Camera capture, face detection and pixel sampling. Images are processed on
-// this device and never uploaded.
+// this device. (Optional YouCam cloud analysis is separate, see js/youcam.js.)
 import { analyzeRegions, regionRects, sampleRegion } from './analysis.js';
 
 let stream = null;

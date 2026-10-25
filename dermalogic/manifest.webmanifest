@@ -1,0 +1,10 @@
+{
+  "name": "DermaLogic",
+  "short_name": "DermaLogic",
+  "description": "Private, on-device skin analysis and skincare tracking.",
+  "start_url": "./index.html#/home",
+  "display": "standalone",
+  "background_color": "#fff8fa",
+  "theme_color": "#7b1e3a",
+  "icons": [{ "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

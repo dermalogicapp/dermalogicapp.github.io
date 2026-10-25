@@ -4,13 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>DermaLogic</title>
-    <meta name="description" content="DermaLogic: private, on-device skin analysis, personalized routines, progress tracking and a voice-enabled skincare assistant." />
+    <meta name="description" content="DermaLogic: AI skin analysis powered by YouCam, personalised routines, progress tracking and a voice-enabled skincare assistant." />
     <meta name="theme-color" content="#7b1e3a" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/v2.css" />
   </head>
-  <body>
+  <body data-mode="app">
     <a class="skip-link" href="#main">Skip to main content</a>
 
     <header class="app-header">
@@ -30,7 +31,7 @@
     <div class="layout">
       <nav id="primary-nav" class="primary-nav" aria-label="Main">
         <ul>
-          <li><a href="#/home" data-route="home">Today</a></li>
+          <li><a href="#/home" data-route="home">Dashboard</a></li>
           <li><a href="#/analyze" data-route="analyze">Face scan</a></li>
           <li><a href="#/profile" data-route="profile">Skin profile</a></li>
           <li><a href="#/routine" data-route="routine">My routine</a></li>
@@ -42,6 +43,7 @@
           <li><a href="#/reminders" data-route="reminders">Reminders</a></li>
           <li><a href="#/settings" data-route="settings">Settings &amp; privacy</a></li>
         </ul>
+        <div class="nav-user"><span id="nav-user" class="small muted"></span><button type="button" class="btn btn-small" id="signout-nav">Sign out</button></div>
       </nav>
 
       <main id="main" tabindex="-1">
@@ -52,7 +54,7 @@
 
     <footer class="app-footer">
       <p><strong>Not medical advice.</strong> DermaLogic gives general skin-care information and camera-based estimates. It does not diagnose or treat any condition. See a doctor or dermatologist for anything painful, spreading, bleeding or changing.</p>
-      <p>Your photos and data stay on this device.</p>
+      <p>Your routine, logs and photos are stored on this device. A face photo is sent to YouCam AI only if you turn on cloud analysis.</p>
     </footer>
 
     <!-- Toasts are visual; the same text is announced through #sr-status / #sr-alert. -->
@@ -64,7 +66,7 @@
       <h2 id="disclaimer-title">Before you start</h2>
       <div id="disclaimer-body">
         <p>DermaLogic gives general skin-care information and estimates from your camera. <strong>It is not a medical device and is not medical advice.</strong> It cannot diagnose skin conditions, and results depend on lighting and camera quality.</p>
-        <p>Photos are analyzed on this device and are not uploaded. Your data is saved only in this browser.</p>
+        <p>Your data is saved in this browser. A face photo is sent to YouCam AI only if you turn on cloud analysis; otherwise it is analysed on this device.</p>
         <p>If you have a painful, spreading, bleeding or changing skin problem, or signs of an allergic reaction such as swelling of the face, lips or throat, seek medical care.</p>
       </div>
       <form method="dialog">

@@ -5,6 +5,8 @@ import { respond } from './chatbot.js';
 import { listen, speak, voiceSupport, isListening, stopListening } from './voice.js';
 import { stopCamera } from './camera.js';
 import { dropletIcon } from './icon.js';
+import { restoreSession, signOut as authSignOut } from './auth.js';
+import { PUBLIC, resolveRoute } from './routes.js';
 
 import home from './views/home.js';
 import analyze from './views/analyze.js';
@@ -17,23 +19,75 @@ import ingredients from './views/ingredients.js';
 import chat from './views/chat.js';
 import reminders from './views/reminders.js';
 import settings from './views/settings.js';
+import landing from './views/landing.js';
+import onboarding from './views/onboarding.js';
+import { login, signup, forgot } from './views/auth.js';
 
-const VIEWS = { home, analyze, profile, routine, complaints, progress, lifestyle, ingredients, chat, reminders, settings };
+const VIEWS = { home, analyze, profile, routine, complaints, progress, lifestyle, ingredients, chat, reminders, settings, landing, login, signup, forgot, welcome: onboarding };
 
 let cleanup = null;
+let session = null;
+let remindersTimer = null;
+
+const isOnboarded = () => {
+  const s = store.get();
+  return !!(s.settings.onboarded || s.profile);
+};
 
 export function navigate(route) {
   location.hash = `#/${route}`;
 }
 
 function currentRoute() {
-  const r = location.hash.replace(/^#\/?/, '').split('?')[0];
-  return VIEWS[r] ? r : 'home';
+  return resolveRoute(location.hash, !!session, session ? isOnboarded() : false);
+}
+
+// Called by the log in / sign up pages once an account is ready.
+function onAuth(newSession) {
+  session = newSession;
+  store.setUser(session.uid);
+  applySettings();
+  startSignedInServices();
+  navigate(isOnboarded() ? 'home' : 'welcome');
+}
+
+function signOut() {
+  authSignOut();
+  session = null;
+  store.setUser(null);
+  applySettings();
+  stopSignedInServices();
+  navigate('landing');
+  announce('Signed out.');
+}
+
+function startSignedInServices() {
+  if (remindersTimer) return;
+  checkReminders();
+  remindersTimer = setInterval(checkReminders, 30000);
+  const dlg = $('#disclaimer');
+  if (isOnboarded() && !store.get().settings.acceptedDisclaimer && dlg?.showModal && !dlg.open) {
+    dlg.showModal();
+    dlg.addEventListener('close', () => store.update((s) => (s.settings.acceptedDisclaimer = true)), { once: true });
+  }
+}
+
+function stopSignedInServices() {
+  clearInterval(remindersTimer);
+  remindersTimer = null;
 }
 
 async function render() {
   const route = currentRoute();
+  const wanted = location.hash.replace(/^#\/?/, '').split('?')[0];
+  if (wanted !== route && (wanted || route !== 'landing')) {
+    // Redirect (for example a logged-out visitor opening #/home) without adding history.
+    history.replaceState(null, '', `#/${route}`);
+  }
   const view = VIEWS[route];
+  const publicMode = PUBLIC.has(route) || route === 'welcome';
+  document.body.dataset.mode = publicMode ? 'public' : 'app';
+  if (session) $('#nav-user').textContent = session.name || session.email;
   if (typeof cleanup === 'function') cleanup();
   cleanup = null;
   stopCamera();
@@ -47,7 +101,7 @@ async function render() {
   const root = $('#view');
   root.innerHTML = '';
   document.title = `${view.title} · DermaLogic`;
-  cleanup = await view.render(root, { navigate });
+  cleanup = await view.render(root, { navigate, onAuth, signOut, session });
   renderBanners();
 
   // Move focus to the new page heading so screen-reader users know the page changed.
@@ -57,13 +111,14 @@ async function render() {
     h1.focus({ preventScroll: false });
   }
   announce(`${view.title} page`);
+  window.scrollTo(0, 0);
 }
 
 // --- Banners for follow-ups ---
 function renderBanners() {
   const host = $('#banners');
-  const due = dueFollowUps(store.get().complaints);
-  if (!due.length || currentRoute() === 'complaints') {
+  const due = session ? dueFollowUps(store.get().complaints) : [];
+  if (!due.length || ['complaints', 'welcome'].includes(currentRoute())) {
     host.innerHTML = '';
     return;
   }
@@ -75,6 +130,7 @@ function renderBanners() {
 
 // --- Reminders: checked every 30 seconds while the app is open ---
 function checkReminders() {
+  if (!session) return;
   const s = store.get();
   const key = today();
   const due = dueReminders(new Date(), s.reminders, key);
@@ -154,10 +210,8 @@ function applySettings() {
   document.documentElement.classList.toggle('large-text', !!settings.largeText);
 }
 
-function init() {
+async function init() {
   $('#brand-icon').innerHTML = dropletIcon({ variant: 'logo', size: 34 });
-  applySettings();
-  store.subscribe(applySettings);
   $('#menu-toggle').addEventListener('click', (e) => {
     const open = e.currentTarget.getAttribute('aria-expanded') !== 'true';
     e.currentTarget.setAttribute('aria-expanded', String(open));
@@ -166,18 +220,16 @@ function init() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeMenu();
   });
+  $('#signout-nav').addEventListener('click', signOut);
   setupVoiceFab();
+  store.subscribe(applySettings);
+
+  session = await restoreSession();
+  if (session) store.setUser(session.uid);
+  applySettings();
   window.addEventListener('hashchange', render);
-  render();
-
-  const dlg = $('#disclaimer');
-  if (!store.get().settings.acceptedDisclaimer && dlg?.showModal) {
-    dlg.showModal();
-    dlg.addEventListener('close', () => store.update((s) => (s.settings.acceptedDisclaimer = true)), { once: true });
-  }
-
-  checkReminders();
-  setInterval(checkReminders, 30000);
+  await render();
+  if (session) startSignedInServices();
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.register('sw.js').catch(() => {});

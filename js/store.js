@@ -2,6 +2,9 @@
 // IndexedDB because they are large. Nothing is sent to a server.
 
 const KEY = 'dermalogic:v1';
+const LEGACY_FLAG = 'dermalogic:legacyOwner';
+let userId = null;
+const userKey = () => (userId ? `${KEY}:${userId}` : KEY);
 const DEFAULT_STATE = () => ({
   profile: null,
   analyses: [],
@@ -18,15 +21,14 @@ const DEFAULT_STATE = () => ({
     lastFired: {},
   },
   chat: [],
-  settings: { speak: false, rate: 1, acceptedDisclaimer: false, highContrast: false, largeText: false },
+  settings: { speak: false, rate: 1, acceptedDisclaimer: false, highContrast: false, largeText: false, cloudScan: false, onboarded: false },
 });
 
-let state = load();
+let state = DEFAULT_STATE();
 const listeners = new Set();
 
-function load() {
+function load(raw) {
   try {
-    const raw = localStorage.getItem(KEY);
     if (!raw) return DEFAULT_STATE();
     const parsed = JSON.parse(raw);
     const base = DEFAULT_STATE();
@@ -38,14 +40,39 @@ function load() {
 
 function save() {
   try {
-    localStorage.setItem(KEY, JSON.stringify(state));
+    if (userId) localStorage.setItem(userKey(), JSON.stringify(state));
   } catch (e) {
     console.warn('Could not save', e);
   }
   listeners.forEach((fn) => fn(state));
 }
 
+// Switches to one account's data. The first account created on a device that
+// already had pre-login data adopts it, so nobody loses their history.
+function setUser(uid) {
+  userId = uid || null;
+  if (!userId) {
+    state = DEFAULT_STATE();
+    return;
+  }
+  let raw = null;
+  try {
+    raw = localStorage.getItem(userKey());
+    if (!raw && localStorage.getItem(KEY) && !localStorage.getItem(LEGACY_FLAG)) {
+      raw = localStorage.getItem(KEY);
+      localStorage.setItem(userKey(), raw);
+      localStorage.setItem(LEGACY_FLAG, userId);
+    }
+  } catch {}
+  state = load(raw);
+  listeners.forEach((fn) => fn(state));
+}
+
 export const store = {
+  setUser,
+  get userId() {
+    return userId;
+  },
   get: () => state,
   update(fn) {
     fn(state);
@@ -79,7 +106,8 @@ export const today = (d = new Date()) => {
 // --- Photos (IndexedDB) ---
 function openDB() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open('dermalogic', 1);
+    const legacy = userId && localStorage.getItem(LEGACY_FLAG) === userId;
+    const req = indexedDB.open(!userId || legacy ? 'dermalogic' : `dermalogic-${userId}`, 1);
     req.onupgradeneeded = () => req.result.createObjectStore('photos', { keyPath: 'id' });
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);

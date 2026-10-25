@@ -5,6 +5,8 @@ import { describeAnalysis } from '../analysis.js';
 import { CONCERNS } from '../data/knowledge.js';
 import { speak } from '../voice.js';
 import { dropletIcon } from '../icon.js';
+import { icon } from '../icons.js';
+import { cropToJpeg, analyzeInCloud, mapYoucamScores, mergeResults } from '../youcam.js';
 
 export default {
   title: 'Face scan',
@@ -12,7 +14,13 @@ export default {
     const s = store.get();
     root.innerHTML = `
       <h1>Face scan</h1>
-      <p class="lead">Estimate your skin tone and spot areas to focus on. The photo is analyzed <strong>on this device</strong> and is not uploaded.</p>
+      <p class="lead">Estimate your skin tone and spot areas to focus on. Skin tone is always measured on your device. Concerns can be analysed by YouCam AI if you switch it on.</p>
+
+      <section class="card engine-card" aria-labelledby="eng-h">
+        <h2 id="eng-h">Analysis engine</h2>
+        <label class="switch-row"><span><strong>Use YouCam AI</strong><small id="eng-hint"></small></span>
+          <input type="checkbox" id="cloud" role="switch" aria-describedby="eng-hint" ${s.settings.cloudScan ? 'checked' : ''} /></label>
+      </section>
 
       <details class="card tips">
         <summary>Tips for an accurate scan</summary>
@@ -67,6 +75,17 @@ export default {
     const capBtn = root.querySelector('#capture');
     const stopBtn = root.querySelector('#stop-cam');
     const results = root.querySelector('#results');
+    const cloud = root.querySelector('#cloud');
+    const hint = root.querySelector('#eng-hint');
+    const hintText = () =>
+      (hint.textContent = cloud.checked
+        ? 'On: the photo you scan is sent securely to YouCam (Perfect Corp.) for an 8-point skin analysis. DermaLogic does not store it on a server. Falls back to on-device if YouCam is unavailable.'
+        : 'Off: everything is analysed on this device and nothing is uploaded.');
+    hintText();
+    cloud.addEventListener('change', () => {
+      store.update((st) => (st.settings.cloudScan = cloud.checked));
+      hintText();
+    });
 
     const setCam = (on) => {
       wrap.hidden = !on;
@@ -108,21 +127,72 @@ export default {
       }
     });
 
+    const STAGES = ['Finding your face', 'Reading skin tone', 'Checking hydration', 'Looking at redness and spots', 'Measuring pores and texture', 'Building your results'];
+
+    function showScanning(photoData, withCloud) {
+      results.innerHTML = `<div class="card scan-stage" role="status" aria-live="polite">
+        <div class="scan-photo"><img src="${photoData}" alt="" /><span class="scan-line" aria-hidden="true"></span><span class="scan-grid" aria-hidden="true"></span></div>
+        <div class="scan-info">
+          ${dropletIcon({ size: 40, className: 'busy' })}
+          <p class="scan-title">${withCloud ? 'Analysing with YouCam AI' : 'Analysing on this device'}</p>
+          <ol class="scan-steps">${STAGES.map((t) => `<li>${t}</li>`).join('')}</ol>
+        </div></div>`;
+      const items = [...results.querySelectorAll('.scan-steps li')];
+      let i = 0;
+      items[0].classList.add('on');
+      const timer = setInterval(() => {
+        if (i < items.length - 1) {
+          items[i].classList.replace('on', 'done');
+          items[++i].classList.add('on');
+        }
+      }, withCloud ? 2200 : 700);
+      return () => clearInterval(timer);
+    }
+
+    const friendly = (e) =>
+      ({
+        not_configured: 'YouCam is not connected on this site yet, so your device did the analysis.',
+        not_available: 'Cloud analysis is not available here (it only works on the hosted site), so your device did the analysis.',
+        sign_in_required: 'Please sign in again to use YouCam. Your device did the analysis instead.',
+        no_face: 'YouCam could not find a clear face, so your device did the analysis. Try brighter, even light with your face centred.',
+        rate_limited: 'You scanned a lot in a short time. Your device did the analysis this time.',
+        timeout: 'YouCam took too long, so your device did the analysis.',
+      })[e.code] || 'YouCam could not be reached, so your device did the analysis.';
+
     async function run(canvas) {
-      results.innerHTML = `<div class="card loader" role="status">${dropletIcon({ size: 40, className: 'busy' })}<p>Analyzing your photo on this device…</p></div>`;
+      const useCloud = cloud.checked;
+      const photoData = downscaleDataURL(canvas);
+      const stopTimer = showScanning(photoData, useCloud);
+      results.scrollIntoView({ behavior: 'smooth', block: 'start' });
       try {
-        const photoData = downscaleDataURL(canvas);
-        const { result, face, rects, method } = await analyzeCanvas(canvas);
+        const started = Date.now();
+        const { result: local, face, rects, method } = await analyzeCanvas(canvas);
+        let result = local;
+        let notice = '';
+        if (useCloud) {
+          try {
+            const crop = cropToJpeg(canvas, face);
+            const scores = await analyzeInCloud(crop.dataUrl);
+            result = mergeResults(local, mapYoucamScores(scores));
+          } catch (e) {
+            notice = friendly(e);
+          }
+        }
+        // Keep the scanning animation up long enough to read.
+        const wait = 1800 - (Date.now() - started);
+        if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+        stopTimer();
         drawOverlay(canvas, face, rects);
         const entry = { id: uid(), date: new Date().toISOString(), result, method };
         store.update((st) => st.analyses.push(entry));
-        showResults(entry, canvas, photoData);
+        showResults(entry, canvas, photoData, notice);
       } catch (e) {
+        stopTimer();
         results.innerHTML = `<div class="card card-warn" role="alert"><p>${esc(e.message)}</p></div>`;
       }
     }
 
-    function showResults(entry, canvas, photoData) {
+    function showResults(entry, canvas, photoData, notice = '') {
       const r = entry.result;
       const desc = describeAnalysis(r);
       const concernRows = Object.entries(r.concerns)
@@ -138,6 +208,8 @@ export default {
       results.innerHTML = `
         <section class="card" aria-labelledby="res-h">
           <h2 id="res-h" tabindex="-1">Your results</h2>
+          <p class="engine-line"><span class="engine-pill">${r.engine === 'youcam' ? `${icon('sparkle', { size: 14 })} Analysed by YouCam AI` : `${icon('lock', { size: 14 })} Analysed on this device`}</span></p>
+          ${notice ? `<div class="callout" role="note">${esc(notice)}</div>` : ''}
           <p class="sr-only">${esc(desc)}</p>
           <div class="result-grid">
             <figure class="result-photo">

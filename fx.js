@@ -1,0 +1,138 @@
+// Motion helpers. Everything here degrades to the final state when the user
+// prefers reduced motion or the browser lacks IntersectionObserver.
+
+import { icon } from './icons.js';
+
+export const reducedMotion = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+// Fade/slide elements in as they scroll into view. Elements get .reveal in
+// markup; this adds .in. Optional data-delay (ms) staggers siblings.
+export function revealOnScroll(root = document) {
+  const els = [...root.querySelectorAll('.reveal')];
+  if (!els.length) return () => {};
+  if (reducedMotion() || !('IntersectionObserver' in window)) {
+    els.forEach((el) => el.classList.add('in'));
+    return () => {};
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const el = e.target;
+        setTimeout(() => el.classList.add('in'), Number(el.dataset.delay || 0));
+        io.unobserve(el);
+        el.querySelectorAll?.('[data-count]').forEach((c) => countUp(c));
+      }
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
+  );
+  els.forEach((el) => io.observe(el));
+  return () => io.disconnect();
+}
+
+// <span data-count="72" data-suffix="%">0</span>
+export function countUp(el, ms = 1100) {
+  if (el.dataset.counted) return;
+  el.dataset.counted = '1';
+  const end = Number(el.dataset.count);
+  const suffix = el.dataset.suffix || '';
+  if (!Number.isFinite(end)) return;
+  if (reducedMotion()) {
+    el.textContent = end + suffix;
+    return;
+  }
+  const t0 = performance.now();
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / ms);
+    const eased = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(end * eased) + suffix;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// Progress ring (SVG). The stroke animates from empty to `pct` after insertion.
+export function ring({ pct, label, sub = '', size = 96, stroke = 9, id = '' }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const p = Math.max(0, Math.min(100, pct));
+  return `<div class="ring" ${id ? `id="${id}"` : ''} data-pct="${p}" role="img" aria-label="${label}: ${p} percent">
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">
+      <circle class="ring-track" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}" fill="none"/>
+      <circle class="ring-bar" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}" fill="none" stroke-linecap="round"
+        stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${c.toFixed(2)}" data-c="${c.toFixed(2)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>
+    </svg>
+    <div class="ring-text"><strong data-count="${p}">${reducedMotion() ? p : 0}</strong>${sub ? `<span>${sub}</span>` : ''}</div>
+  </div>`;
+}
+
+export function animateRings(root = document) {
+  root.querySelectorAll('.ring').forEach((el) => {
+    const bar = el.querySelector('.ring-bar');
+    const c = Number(bar.dataset.c);
+    const pct = Number(el.dataset.pct);
+    const apply = () => (bar.style.strokeDashoffset = String(c * (1 - pct / 100)));
+    if (reducedMotion()) apply();
+    else requestAnimationFrame(() => requestAnimationFrame(apply));
+    const n = el.querySelector('[data-count]');
+    if (n) countUp(n);
+  });
+  root.querySelectorAll('.meter-anim span').forEach((s) => {
+    const w = s.dataset.w;
+    if (reducedMotion()) s.style.width = w;
+    else requestAnimationFrame(() => requestAnimationFrame(() => (s.style.width = w)));
+  });
+}
+
+// A burst of droplets from a point; used for the "all set" moments.
+export function burst(host, n = 16) {
+  if (reducedMotion()) return;
+  const colors = ['#7b1e3a', '#d9557f', '#f4a6c1', '#ffffff', '#9b2c4f'];
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('span');
+    d.className = 'burst-drop';
+    const ang = (Math.PI * 2 * i) / n + Math.random() * 0.4;
+    const dist = 70 + Math.random() * 90;
+    d.style.setProperty('--dx', `${Math.cos(ang) * dist}px`);
+    d.style.setProperty('--dy', `${Math.sin(ang) * dist - 20}px`);
+    d.style.background = colors[i % colors.length];
+    d.style.width = d.style.height = `${6 + Math.random() * 9}px`;
+    host.appendChild(d);
+    setTimeout(() => d.remove(), 1400);
+  }
+}
+
+// Turns a grid into a swipeable card row on small screens. Mark the grid with
+// data-swipe="Label for screen readers". On wide screens the CSS keeps the grid
+// and hides the hint and dots.
+export function enhanceSwipe(root = document) {
+  root.querySelectorAll('[data-swipe]:not([data-swipe-ready])').forEach((track) => {
+    track.dataset.swipeReady = '1';
+    const cards = [...track.children];
+    if (cards.length < 2) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'swipe-wrap';
+    track.before(wrap);
+    wrap.append(track);
+    track.classList.add('swipe');
+    track.tabIndex = 0;
+    track.setAttribute('aria-label', `${track.dataset.swipe}. Swipe sideways to see more.`);
+    wrap.insertAdjacentHTML(
+      'beforeend',
+      `<div class="swipe-hint" aria-hidden="true"><span class="swipe-hand">${icon('swipe', { size: 22 })}</span><span>Swipe</span><span class="swipe-arrows"><i></i><i></i><i></i></span></div>
+       <div class="swipe-dots" aria-hidden="true">${cards.map((_, i) => `<span class="${i ? '' : 'on'}"></span>`).join('')}</div>`
+    );
+    const dots = [...wrap.querySelectorAll('.swipe-dots span')];
+    const hint = wrap.querySelector('.swipe-hint');
+    let moved = false;
+    track.addEventListener('scroll', () => {
+      const step = cards[1].offsetLeft - cards[0].offsetLeft || 1;
+      const i = Math.max(0, Math.min(cards.length - 1, Math.round(track.scrollLeft / step)));
+      dots.forEach((d, k) => d.classList.toggle('on', k === i));
+      if (!moved && track.scrollLeft > 24) {
+        moved = true;
+        hint.classList.add('gone');
+      }
+    }, { passive: true });
+  });
+}

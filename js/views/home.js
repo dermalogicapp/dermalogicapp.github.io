@@ -1,11 +1,13 @@
 import { store, today } from '../store.js';
 import { esc, fmtDate, announce, levelBadge } from '../ui.js';
-import { buildPlan } from '../recommend.js';
+import { buildPlan, mergedConcerns } from '../recommend.js';
 import { dueFollowUps } from '../reminders.js';
 import { lastNDays } from '../lifestyle.js';
 import { dropletIcon } from '../icon.js';
 import { icon } from '../icons.js';
-import { ring, animateRings, revealOnScroll } from '../fx.js';
+import { ring, animateRings, revealOnScroll, enhanceSwipe, metricTile, pillCta } from '../fx.js';
+import { art } from '../art.js';
+import { CONCERNS } from '../data/knowledge.js';
 import { skinScore, scoreTrend, greeting, nextAction } from '../score.js';
 
 export function streak(routineLog, plan) {
@@ -67,14 +69,23 @@ export default {
 
     const concerns = last
       ? CONCERN_ORDER.filter((k) => last.result.concerns[k])
-          .map((k) => last.result.concerns[k])
-          .map(
-            (c) => `<li><span class="sn-label">${esc(c.label)}</span>
-              <span class="meter meter-anim" role="img" aria-label="${esc(c.label)}: ${c.score} out of 100, ${c.level}"><span data-w="${Math.max(3, c.score)}%" class="lvl-${c.level}"></span></span>
-              ${levelBadge(c.level)}</li>`
-          )
+          .map((k) => `<li>${metricTile(last.result.concerns[k])}</li>`)
           .join('')
       : '';
+
+    const daysAgo = last ? Math.max(0, Math.round((Date.now() - new Date(last.date).getTime()) / 86400000)) : null;
+    const agoText = daysAgo == null ? '' : daysAgo === 0 ? 'today' : daysAgo === 1 ? 'yesterday' : `${daysAgo} days ago`;
+
+    // "For you" cards: what to do or know next, from the profile and last scan.
+    const topConcern = mergedConcerns(s.profile || {}, last?.result)[0];
+    const firstIng = plan?.keyIngredients?.[0];
+    const forYou = [
+      plan && { art: 'routine', tag: 'Your routine', title: 'See your morning and evening steps', href: '#/routine' },
+      firstIng && { art: 'ingredients', tag: 'Ingredient to look for', title: `${firstIng.name} for ${firstIng.reason.toLowerCase()}`, href: '#/ingredients' },
+      topConcern && CONCERNS[topConcern] && { art: 'profile', tag: `Tip: ${CONCERNS[topConcern].label.toLowerCase()}`, title: CONCERNS[topConcern].tips[0], href: '#/routine' },
+      { art: 'lifestyle', tag: 'Habits', title: 'Sleep and water show up on your skin', href: '#/lifestyle' },
+      { art: 'chat', tag: 'Assistant', title: 'Ask anything, by voice or text', href: '#/chat' },
+    ].filter(Boolean);
 
     root.innerHTML = `
       <section class="hero dash-hero" aria-labelledby="hero-h">
@@ -100,15 +111,21 @@ export default {
           : ''
       }
 
-      <section class="stat-grid" aria-label="Your numbers">
+      <section class="score-card reveal" aria-labelledby="sc-h">
+        <div>
+          <h2 id="sc-h" class="sc-title">Skin score</h2>
+          <p class="score-big">${score == null ? '–' : score}<span>${score == null ? '' : '%'}</span></p>
+          <p class="small muted">${last ? `Last analysis: ${agoText}` : 'No analysis yet'}</p>
+          <p class="small trend trend-${trend.dir}">${score == null ? '' : `${icon(trend.dir === 'flat' ? 'flat' : trend.dir, { size: 14 })} ${esc(trend.text)}`}</p>
+          ${pillCta(last ? 'Scan again' : 'Start my first scan', { href: '#/analyze', small: true })}
+        </div>
+        ${ring({ pct: score ?? 0, label: 'Skin score', sub: score == null ? 'no scan' : '/100', size: 130, stroke: 12 })}
+      </section>
+
+      <section class="stat-grid" aria-label="Your numbers" data-swipe="Your numbers">
         <div class="stat-card reveal">
           ${ring({ pct: routinePct, label: "Today's routine", sub: '%' })}
           <div><h2 class="stat-h">Today's routine</h2><p class="muted small">${planTotal ? `${planDone} of ${planTotal} steps done` : 'Set up a profile to get one'}</p></div>
-        </div>
-        <div class="stat-card reveal" data-delay="80">
-          ${ring({ pct: score ?? 0, label: 'Skin score', sub: score == null ? 'no scan' : '/100' })}
-          <div><h2 class="stat-h">Skin score</h2>
-            <p class="muted small trend trend-${trend.dir}">${score == null ? 'Scan to get yours' : `${icon(trend.dir === 'flat' ? 'flat' : trend.dir, { size: 14 })} ${esc(trend.text)}`}</p></div>
         </div>
         <div class="stat-card reveal" data-delay="160">
           <div class="streak-badge">${icon('flame', { size: 30 })}<strong>${days}</strong></div>
@@ -118,6 +135,13 @@ export default {
           <div class="streak-badge ${loggedLifestyle ? 'ok' : ''}">${icon(loggedLifestyle ? 'check' : 'moon', { size: 30 })}</div>
           <div><h2 class="stat-h">Daily check-in</h2><p class="muted small">${loggedLifestyle ? 'Logged today' : 'Not logged yet'}</p></div>
         </div>
+      </section>
+
+      <section aria-labelledby="fy-h" class="foryou reveal">
+        <h2 id="fy-h">For you</h2>
+        <ul class="fy-row" data-swipe="For you">
+          ${forYou.map((f, i) => `<li class="fy fy-${i % 4}"><a href="${f.href}"><div class="fy-art">${art(f.art)}</div><div class="fy-body"><small>${esc(f.tag)}</small><strong>${esc(f.title)}</strong></div><span class="fy-go">${icon('arrow', { size: 18 })}</span></a></li>`).join('')}
+        </ul>
       </section>
 
       <section class="card reveal" aria-labelledby="wk-h">
@@ -154,14 +178,14 @@ export default {
             last
               ? `<p class="small muted">${fmtDate(last.date)} · ${esc(last.result.tone.category)} tone, ${esc(last.result.tone.undertone.toLowerCase())} undertone ·
                   <span class="engine-pill">${last.result.engine === 'youcam' ? 'YouCam AI' : 'On device'}</span></p>
-                 <ul class="snapshot">${concerns}</ul>
-                 <a class="btn btn-small" href="#/analyze">Scan again</a>`
+                 <ul class="snapshot tiles-row" data-swipe="Skin concerns">${concerns}</ul>
+                 ${pillCta('Get my skincare plan', { href: '#/routine', small: true })}`
               : `<div class="empty">${dropletIcon({ size: 56 })}<p>No scan yet. Your results will appear here.</p><a class="btn btn-primary" href="#/analyze">Start a scan</a></div>`
           }
         </section>
         <section class="card reveal" data-delay="100" aria-labelledby="qa-h">
           <h2 id="qa-h">Quick actions</h2>
-          <ul class="quick">
+          <ul class="quick" data-swipe="Quick actions">
             <li><a href="#/analyze">${icon('scan')}<span>Face scan</span></a></li>
             <li><a href="#/progress">${icon('camera')}<span>Progress photo</span></a></li>
             <li><a href="#/complaints">${icon('heart')}<span>Log a complaint</span></a></li>
@@ -174,6 +198,7 @@ export default {
       </div>
     `;
 
+    enhanceSwipe(root);
     animateRings(root);
     const stopReveal = revealOnScroll(root);
 

@@ -2,11 +2,13 @@ import { store, today } from './store.js';
 import { $, $$, announce, toast, esc } from './ui.js';
 import { dueReminders, dueFollowUps } from './reminders.js';
 import { respond } from './chatbot.js';
-import { listen, speak, voiceSupport, isListening, stopListening } from './voice.js';
+import { listen, speak, voiceSupport, isListening, stopListening, unlockAudio, cue, stopSpeaking } from './voice.js';
 import { stopCamera } from './camera.js';
 import { dropletIcon } from './icon.js';
 import { restoreSession, signOut as authSignOut } from './auth.js';
 import { PUBLIC, resolveRoute } from './routes.js';
+import { art } from './art.js';
+import { icon } from './icons.js';
 
 import home from './views/home.js';
 import analyze from './views/analyze.js';
@@ -25,7 +27,26 @@ import { login, signup, forgot } from './views/auth.js';
 
 const VIEWS = { home, analyze, profile, routine, complaints, progress, lifestyle, ingredients, chat, reminders, settings, landing, login, signup, forgot, welcome: onboarding };
 
+const SCENE = { analyze: 'scan', profile: 'profile', routine: 'routine', complaints: 'complaints', progress: 'progress', lifestyle: 'lifestyle', ingredients: 'ingredients', chat: 'chat', reminders: 'reminders', settings: 'settings' };
+
+// Wraps the page heading (and its intro line) in an illustrated banner.
+function decorate(root, route) {
+  const h1 = root.querySelector('h1');
+  if (!SCENE[route] || !h1 || h1.closest('.page-hero')) return;
+  const hero = document.createElement('div');
+  hero.className = 'page-hero';
+  const copy = document.createElement('div');
+  copy.className = 'page-hero-copy';
+  h1.before(hero);
+  copy.append(h1);
+  const lead = hero.nextElementSibling;
+  if (lead?.matches('p.lead')) copy.append(lead);
+  hero.append(copy);
+  hero.insertAdjacentHTML('beforeend', `<div class="page-hero-art">${art(SCENE[route])}</div>`);
+}
+
 let cleanup = null;
+let heroWatch = null;
 let session = null;
 let remindersTimer = null;
 
@@ -88,6 +109,7 @@ async function render() {
   const publicMode = PUBLIC.has(route) || route === 'welcome';
   document.body.dataset.mode = publicMode ? 'public' : 'app';
   if (session) $('#nav-user').textContent = session.name || session.email;
+  heroWatch?.disconnect();
   if (typeof cleanup === 'function') cleanup();
   cleanup = null;
   stopCamera();
@@ -97,11 +119,18 @@ async function render() {
     else a.removeAttribute('aria-current');
   });
   closeMenu();
+  $$('#tabbar [data-tab]').forEach((a) => (a.dataset.tab === route ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
 
   const root = $('#view');
   root.innerHTML = '';
   document.title = `${view.title} · DermaLogic`;
   cleanup = await view.render(root, { navigate, onAuth, signOut, session });
+  decorate(root, route);
+  // Views that redraw themselves (reminders, complaints) keep their banner.
+  heroWatch = new MutationObserver(() => {
+    if (!root.querySelector('.page-hero')) decorate(root, route);
+  });
+  heroWatch.observe(root, { childList: true, subtree: true });
   renderBanners();
 
   // Move focus to the new page heading so screen-reader users know the page changed.
@@ -155,6 +184,8 @@ function setupVoiceFab() {
     btn.title = 'Voice input is not supported in this browser';
   }
   const run = () => {
+    unlockAudio();
+    stopSpeaking();
     if (isListening()) {
       stopListening();
       return;
@@ -166,10 +197,13 @@ function setupVoiceFab() {
     btn.classList.add('listening');
     btn.setAttribute('aria-pressed', 'true');
     announce('Listening. Speak now.');
+    cue('start');
+    toast('Listening… speak now');
     listen({
       onResult: (text) => handleVoiceQuery(text),
       onError: (msg) => toast(msg, 'error'),
       onEnd: () => {
+        cue('stop');
         btn.classList.remove('listening');
         btn.setAttribute('aria-pressed', 'false');
       },
@@ -195,10 +229,33 @@ export function handleVoiceQuery(text) {
   speak(reply.text, { rate: s.settings.rate });
   if (reply.action?.navigate) navigate(reply.action.navigate);
   else if (currentRoute() === 'chat') render();
-  else toast(reply.text.split('\n')[0]);
+  else toast(`You said: “${text}”. ${reply.text.split('\n')[0]}`);
+}
+
+const TABS = [
+  ['home', 'Home', 'drop'],
+  ['routine', 'Routine', 'calendar'],
+  ['analyze', 'Scan', 'scan'],
+  ['reminders', 'Reminders', 'bell'],
+  ['more', 'More', 'user'],
+];
+
+function buildTabbar() {
+  $('#tabbar').innerHTML = TABS.map(([r, label, ic]) =>
+    r === 'more'
+      ? `<button type="button" class="tab" id="tab-more" aria-controls="primary-nav" aria-expanded="false">${icon(ic, { size: 22 })}<span>${label}</span></button>`
+      : `<a class="tab ${r === 'analyze' ? 'tab-scan' : ''}" href="#/${r}" data-tab="${r}">${icon(ic, { size: r === 'analyze' ? 26 : 22 })}<span>${label}</span></a>`
+  ).join('');
+  $('#tab-more').addEventListener('click', () => {
+    $('#menu-toggle').click();
+    const open = $('#menu-toggle').getAttribute('aria-expanded') === 'true';
+    $('#tab-more').setAttribute('aria-expanded', String(open));
+    if (open) window.scrollTo({ top: 0 });
+  });
 }
 
 function closeMenu() {
+  $('#tab-more')?.setAttribute('aria-expanded', 'false');
   const t = $('#menu-toggle');
   t.setAttribute('aria-expanded', 'false');
   $('#primary-nav').classList.remove('open');
@@ -220,6 +277,7 @@ async function init() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeMenu();
   });
+  buildTabbar();
   $('#signout-nav').addEventListener('click', signOut);
   setupVoiceFab();
   store.subscribe(applySettings);

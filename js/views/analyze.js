@@ -6,6 +6,10 @@ import { CONCERNS } from '../data/knowledge.js';
 import { speak } from '../voice.js';
 import { dropletIcon } from '../icon.js';
 import { icon } from '../icons.js';
+import { art } from '../art.js';
+import { ring, animateRings, enhanceSwipe, metricTile, pillCta } from '../fx.js';
+import { skinScore } from '../score.js';
+import { measureFrame, coachMessage } from '../coach.js';
 import { cropToJpeg, analyzeInCloud, mapYoucamScores, mergeResults } from '../youcam.js';
 
 export default {
@@ -22,23 +26,27 @@ export default {
           <input type="checkbox" id="cloud" role="switch" aria-describedby="eng-hint" ${s.settings.cloudScan ? 'checked' : ''} /></label>
       </section>
 
-      <details class="card tips">
-        <summary>Tips for an accurate scan</summary>
-        <ul>
-          <li>Face a window or soft daylight. Avoid colored lights and strong shadows.</li>
-          <li>Remove makeup, glasses and hair from your face.</li>
-          <li>Hold the camera at eye level and keep a neutral expression.</li>
-          <li>Use the same place and time of day each scan so results are comparable.</li>
-        </ul>
-      </details>
+      <section class="card howto" aria-labelledby="how-h">
+        <h2 id="how-h">Before you scan</h2>
+        <ol class="howto-grid" data-swipe="Scan instructions">
+          <li><div class="howto-art">${art('circle')}</div><strong>1. Place your face in the circle</strong><span>Centre your face inside the dashed oval, at eye level.</span></li>
+          <li><div class="howto-art">${art('light')}</div><strong>2. Face the light</strong><span>Stand facing a window or soft daylight. Avoid colored lights and shadows.</span></li>
+          <li><div class="howto-art">${art('hair')}</div><strong>3. Clear your face</strong><span>Hair back, no glasses or makeup, neutral expression.</span></li>
+          <li><div class="howto-art">${art('still')}</div><strong>4. Stay close, hold still</strong><span>Hold the phone at arm's length and keep still for a few seconds.</span></li>
+        </ol>
+        <p class="small muted">Use the same place and time of day for each scan so your results are comparable.</p>
+      </section>
 
       <section class="card" aria-labelledby="cap-h">
         <h2 id="cap-h">Take or upload a photo</h2>
         <div class="camera-wrap" id="camera-wrap" hidden>
           <video id="video" playsinline muted aria-label="Camera preview"></video>
-          <div class="guide-oval" aria-hidden="true"></div>
-          <p class="camera-hint" id="camera-hint">Line your face up inside the oval.</p>
+          <div class="guide-oval" id="guide-oval" aria-hidden="true"></div>
+          <p class="coach" id="camera-hint" data-state="place" aria-hidden="true">Place your face in the circle. Stay close to the camera.</p>
+          <div class="countdown" id="countdown" aria-hidden="true" hidden></div>
         </div>
+        <p class="sr-only" id="coach-live" role="status" aria-live="polite"></p>
+        <label class="check auto-cap" id="auto-wrap" hidden><input type="checkbox" id="auto" checked /> <span>Capture automatically when I'm in position</span></label>
         <div class="btn-row">
           <button type="button" class="btn btn-primary" id="start-cam">Open camera</button>
           <button type="button" class="btn" id="capture" hidden>Capture and analyze</button>
@@ -69,6 +77,7 @@ export default {
       }
     `;
 
+    enhanceSwipe(root);
     const video = root.querySelector('#video');
     const wrap = root.querySelector('#camera-wrap');
     const startBtn = root.querySelector('#start-cam');
@@ -87,7 +96,76 @@ export default {
       hintText();
     });
 
+    const hintEl = root.querySelector('#camera-hint');
+    const oval = root.querySelector('#guide-oval');
+    const live = root.querySelector('#coach-live');
+    const cd = root.querySelector('#countdown');
+    const autoBox = root.querySelector('#auto');
+    const probe = document.createElement('canvas');
+    probe.width = 64;
+    probe.height = 80;
+    let coachTimer = null;
+    let readyTicks = 0;
+    let counting = null;
+    let lastKey = '';
+    let lastSaid = 0;
+
+    function stopCoach() {
+      clearInterval(coachTimer);
+      coachTimer = null;
+      clearInterval(counting);
+      counting = null;
+      readyTicks = 0;
+      lastKey = '';
+      cd.hidden = true;
+    }
+
+    function startCoach() {
+      stopCoach();
+      const ctx = probe.getContext('2d', { willReadFrequently: true });
+      coachTimer = setInterval(() => {
+        if (!video.videoWidth) return;
+        ctx.drawImage(video, 0, 0, probe.width, probe.height);
+        const m = coachMessage(measureFrame(ctx.getImageData(0, 0, probe.width, probe.height).data, probe.width, probe.height));
+        hintEl.textContent = m.text;
+        hintEl.dataset.state = m.key;
+        oval.classList.toggle('is-ready', m.ready);
+        if (m.key !== lastKey && Date.now() - lastSaid > 2500) {
+          lastKey = m.key;
+          lastSaid = Date.now();
+          live.textContent = m.text;
+          if (store.get().settings.speak) speak(m.text, { rate: store.get().settings.rate });
+        }
+        readyTicks = m.ready ? readyTicks + 1 : 0;
+        if (!m.ready && counting) {
+          clearInterval(counting);
+          counting = null;
+          cd.hidden = true;
+        }
+        if (m.ready && readyTicks >= 4 && !counting && autoBox.checked) {
+          let n = 3;
+          cd.hidden = false;
+          cd.textContent = n;
+          live.textContent = 'Hold still. Capturing in 3, 2, 1.';
+          counting = setInterval(() => {
+            n -= 1;
+            if (n <= 0) {
+              stopCoach();
+              capBtn.click();
+            } else {
+              cd.textContent = n;
+              cd.classList.remove('tick');
+              void cd.offsetWidth;
+              cd.classList.add('tick');
+            }
+          }, 1000);
+        }
+      }, 450);
+    }
+
     const setCam = (on) => {
+      if (!on) stopCoach();
+      root.querySelector('#auto-wrap').hidden = !on;
       wrap.hidden = !on;
       capBtn.hidden = !on;
       stopBtn.hidden = !on;
@@ -98,7 +176,8 @@ export default {
       try {
         setCam(true);
         await startCamera(video);
-        announce('Camera on. Line your face up inside the oval, then press Capture and analyze.');
+        announce('Camera on. Place your face in the circle and stay close to the camera. Instructions will follow.');
+        startCoach();
         capBtn.focus();
       } catch (e) {
         setCam(false);
@@ -197,10 +276,8 @@ export default {
       const desc = describeAnalysis(r);
       const concernRows = Object.entries(r.concerns)
         .map(
-          ([k, c]) => `<li class="concern-row">
-            <div class="concern-head"><span>${esc(c.label)}</span> ${levelBadge(c.level)}</div>
-            ${meter(c.score, c.label)}
-            ${c.level !== 'low' && CONCERNS[k] ? `<p class="small muted">Tip: ${esc(CONCERNS[k].tips[0])}</p>` : ''}
+          ([k, c]) => `<li class="concern-tile">${metricTile({ label: c.label, score: c.score, level: c.level })}
+            ${c.level !== 'low' && CONCERNS[k] ? `<p class="small muted">${esc(CONCERNS[k].tips[0])}</p>` : ''}
           </li>`
         )
         .join('');
@@ -211,6 +288,10 @@ export default {
           <p class="engine-line"><span class="engine-pill">${r.engine === 'youcam' ? `${icon('sparkle', { size: 14 })} Analysed by YouCam AI` : `${icon('lock', { size: 14 })} Analysed on this device`}</span></p>
           ${notice ? `<div class="callout" role="note">${esc(notice)}</div>` : ''}
           <p class="sr-only">${esc(desc)}</p>
+          ${(() => {
+            const sc = skinScore(r);
+            return sc == null ? '' : `<div class="result-score">${ring({ pct: sc, label: 'Skin score', sub: '/100', size: 120, stroke: 11 })}<div><h3>Your skin score</h3><p class="small muted">Higher is better. It averages how noticeable each concern is. Use it to track change, not to judge.</p></div></div>`;
+          })()}
           <div class="result-grid">
             <figure class="result-photo">
               <div id="canvas-host"></div>
@@ -239,12 +320,12 @@ export default {
           </div>
 
           <h3>Areas to look at</h3>
-          <ul class="concerns">${concernRows}</ul>
+          <ul class="concerns tiles-row" data-swipe="Your skin concerns">${concernRows}</ul>
           ${r.warnings.length ? `<div class="callout" role="note"><strong>Accuracy note:</strong> ${esc(r.warnings.join(' '))}</div>` : ''}
           <p class="small muted">These are camera estimates, not a diagnosis. Dryness, sensitivity and texture are better described by you in your skin profile.</p>
 
           <div class="btn-row">
-            <button type="button" class="btn btn-primary" id="to-routine">See my routine</button>
+            ${pillCta('Get my skincare plan', { id: 'to-routine' })}
             <button type="button" class="btn" id="save-photo">Save as today's progress photo</button>
             <button type="button" class="btn btn-ghost" id="read-aloud">Read results aloud</button>
           </div>
@@ -255,6 +336,8 @@ export default {
       canvas.className = 'result-canvas';
       host.appendChild(canvas);
       results.querySelector('#res-h').focus();
+      animateRings(results);
+      enhanceSwipe(results);
       announce('Analysis complete. ' + desc);
       if (store.get().settings.speak) speak(desc, { rate: store.get().settings.rate });
 
@@ -268,6 +351,9 @@ export default {
       });
     }
 
-    return () => stopCamera();
+    return () => {
+      stopCoach();
+      stopCamera();
+    };
   },
 };

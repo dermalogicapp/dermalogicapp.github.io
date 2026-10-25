@@ -1,6 +1,7 @@
 import { dropletIcon } from '../icon.js';
 import { icon } from '../icons.js';
-import { revealOnScroll } from '../fx.js';
+import { art } from '../art.js';
+import { revealOnScroll, enhanceSwipe } from '../fx.js';
 import { publicHeader, publicFooter, wireScrollLinks } from './shared.js';
 
 const FEATURES = [
@@ -12,6 +13,7 @@ const FEATURES = [
   ['leaf', 'Bleaching recovery path', 'A gentle, step-by-step soothing and barrier-repair plan, with no harsh actives and clear warning signs.'],
 ];
 
+const STEP_ART = ['circle', 'profile', 'progress'];
 const STEPS = [
   ['1', 'Create your account', 'Sign up with your email in under a minute.'],
   ['2', 'Tell us about your skin', 'A short, friendly set-up: goals, skin type and history. Skip anything you like.'],
@@ -84,7 +86,7 @@ export default {
 
       <section class="l-section" id="features" aria-labelledby="f-h">
         <div class="l-head reveal"><p class="eyebrow dark">Features</p><h2 id="f-h">Everything your skin needs, in one place</h2></div>
-        <ul class="feature-grid">
+        <ul class="feature-grid" data-swipe="Features">
           ${FEATURES.map(
             ([ic, t, d], i) => `<li class="feature reveal" data-delay="${(i % 3) * 90}">
               <span class="feature-ic">${icon(ic, { size: 26 })}</span>
@@ -95,8 +97,8 @@ export default {
 
       <section class="l-section l-alt" id="how" aria-labelledby="h-h">
         <div class="l-head reveal"><p class="eyebrow dark">How it works</p><h2 id="h-h">From sign-up to glow in three steps</h2></div>
-        <ol class="how">
-          ${STEPS.map(([n, t, d], i) => `<li class="how-step reveal" data-delay="${i * 140}"><span class="how-n">${n}</span><h3>${t}</h3><p>${d}</p></li>`).join('')}
+        <ol class="how" data-swipe="How it works">
+          ${STEPS.map(([n, t, d], i) => `<li class="how-step reveal" data-delay="${i * 140}"><div class="how-art">${art(STEP_ART[i])}</div><span class="how-n">${n}</span><h3>${t}</h3><p>${d}</p></li>`).join('')}
         </ol>
       </section>
 
@@ -107,16 +109,19 @@ export default {
           <p>If you have used lightening or bleaching products, DermaLogic skips the harsh actives and gives you a three-phase soothing and barrier-repair plan, with notes on steroid creams and when to see a dermatologist.</p>
           <a class="btn btn-primary" href="#/signup">Build my gentle plan</a>
         </div>
+        <div class="split-right">
+        <div class="reveal split-art" data-delay="100">${art('complaints')}</div>
         <ul class="phases reveal" data-delay="150">
           <li><b>Phase 1</b><span>Calm and protect</span></li>
           <li><b>Phase 2</b><span>Rebuild the barrier</span></li>
           <li><b>Phase 3</b><span>Even tone, safely</span></li>
         </ul>
+        </div>
       </section>
 
       <section class="l-section l-alt" id="privacy" aria-labelledby="p-h">
         <div class="l-head reveal"><p class="eyebrow dark">Privacy and honesty</p><h2 id="p-h">You stay in control</h2></div>
-        <ul class="feature-grid cols-3">
+        <ul class="feature-grid cols-3" data-swipe="Privacy points">
           <li class="feature reveal"><span class="feature-ic">${icon('lock', { size: 26 })}</span><h3>Your data stays with you</h3><p>Routines, logs and photos are saved on your device, separately for each account.</p></li>
           <li class="feature reveal" data-delay="90"><span class="feature-ic">${icon('camera', { size: 26 })}</span><h3>Cloud scan is opt-in</h3><p>A face photo is sent to YouCam AI only if you switch cloud analysis on. Otherwise, analysis runs on your device.</p></li>
           <li class="feature reveal" data-delay="180"><span class="feature-ic">${icon('heart', { size: 26 })}</span><h3>Not a doctor</h3><p>DermaLogic is general guidance, not a diagnosis. We tell you when something needs a professional.</p></li>
@@ -133,6 +138,7 @@ export default {
     </div>`;
 
     wireScrollLinks(root);
+    enhanceSwipe(root);
     const stop = revealOnScroll(root);
     return () => stop();
   },

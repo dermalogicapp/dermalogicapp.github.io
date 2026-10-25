@@ -143,9 +143,23 @@ export function drawOverlay(canvas, face, rects) {
   const ctx = canvas.getContext('2d');
   ctx.lineWidth = Math.max(2, canvas.width / 300);
   ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-  ctx.setLineDash([8, 6]);
-  ctx.strokeRect(face.x, face.y, face.width, face.height);
+  ctx.setLineDash([10, 8]);
+  ctx.beginPath();
+  ctx.ellipse(face.x + face.width / 2, face.y + face.height / 2, face.width / 2, face.height / 2, 0, 0, Math.PI * 2);
+  ctx.stroke();
   ctx.setLineDash([]);
-  ctx.strokeStyle = 'rgba(244, 166, 193, 0.95)';
-  for (const r of Object.values(rects)) ctx.strokeRect(r.x, r.y, r.width, r.height);
+  // A white dot with a pink halo marks each area that was measured.
+  const dot = Math.max(5, canvas.width / 90);
+  for (const r of Object.values(rects)) {
+    const cx = r.x + r.width / 2;
+    const cy = r.y + r.height / 2;
+    ctx.fillStyle = 'rgba(244, 166, 193, 0.45)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, dot * 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(cx, cy, dot, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }

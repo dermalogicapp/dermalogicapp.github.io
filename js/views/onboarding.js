@@ -3,6 +3,7 @@ import { esc, announce, toast } from '../ui.js';
 import { CONCERNS, SKIN_TYPES, BODY_TYPES } from '../data/knowledge.js';
 import { dropletIcon } from '../icon.js';
 import { icon } from '../icons.js';
+import { art } from '../art.js';
 import { burst, reducedMotion } from '../fx.js';
 import { currentSession } from '../auth.js';
 
@@ -21,6 +22,7 @@ const SKIN_HINTS = {
   normal: 'Comfortable',
   sensitive: 'Stings or reddens easily',
 };
+const ART = { welcome: 'scan', goals: 'routine', skin: 'profile', history: 'complaints', reminders: 'reminders', privacy: 'scan' };
 const STEPS = ['welcome', 'goals', 'skin', 'history', 'reminders', 'privacy', 'done'];
 
 export default {
@@ -78,7 +80,7 @@ export default {
         <p class="lead">Let's set up DermaLogic around you. It takes about two minutes and you can skip anything.</p>
         <div class="field"><label for="ob-name">What should we call you?</label>
           <input id="ob-name" autocomplete="given-name" value="${esc(data.name)}" /></div>
-        ${nav({ back: false, next: "Let's go" })}`,
+        <div class="ob-nav ob-nav-solo"><button type="button" class="pill-cta" id="ob-next"><span>Start my journey</span><i class="pill-go">${icon('arrow', { size: 20 })}</i></button></div>`,
       goals: () => `
         <h1 tabindex="-1" id="ob-h">What would you like to improve?</h1>
         <p class="lead">Choose as many as you like.</p>
@@ -201,7 +203,7 @@ export default {
       step = to;
       const name = STEPS[step];
       card.className = 'ob-card';
-      card.innerHTML = views[name]();
+      card.innerHTML = (ART[name] ? `<div class="ob-art">${art(ART[name])}</div>` : '') + views[name]();
       void card.offsetWidth;
       card.classList.add(dir > 0 ? 'in-right' : 'in-left');
       const pct = (Math.min(step, STEPS.length - 2) + (step === STEPS.length - 1 ? 1 : 0)) / (STEPS.length - 1);

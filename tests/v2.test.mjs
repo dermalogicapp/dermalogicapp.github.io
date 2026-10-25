@@ -190,3 +190,49 @@ test('API: requires a signed-in user when Supabase is configured, and rate limit
   delete process.env.SUPABASE_URL;
   delete process.env.SUPABASE_ANON_KEY;
 });
+
+test('coach: measures a frame and gives the right advice', async () => {
+  const { measureFrame, coachMessage, COACH } = await import('../js/coach.js');
+  const W = 40, H = 50;
+  const frame = (fn) => { const d = new Uint8ClampedArray(W * H * 4); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const [r, g, b] = fn(x / W, y / H); const i = (y * W + x) * 4; d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = 255; } return d; };
+  const skin = [200, 150, 125], wall = [60, 70, 120], black = [5, 5, 5], white = [250, 250, 250];
+  const inOval = (x, y) => ((x - 0.5) / 0.2) ** 2 + ((y - 0.48) / 0.34) ** 2 <= 1;
+  assert.equal(coachMessage(measureFrame(frame(() => black), W, H)).key, 'dark');
+  assert.equal(coachMessage(measureFrame(frame(() => white), W, H)).key, 'bright');
+  assert.equal(coachMessage(measureFrame(frame(() => wall), W, H)).key, 'place');
+  const good = coachMessage(measureFrame(frame((x, y) => (inOval(x, y) ? skin : wall)), W, H));
+  assert.equal(good.key, 'ready'); assert.ok(good.ready);
+  const close = coachMessage(measureFrame(frame(() => skin), W, H));
+  assert.equal(close.key, 'back');
+  const partial = coachMessage(measureFrame(frame((x, y) => (inOval(x, y) && x < 0.5 ? skin : wall)), W, H));
+  assert.equal(partial.key, 'closer');
+  assert.ok(COACH.ready);
+});
+
+test('reminders schedule sorts today into upcoming, due and complete', async () => {
+  const { todaySchedule } = await import('../js/views/reminders.js');
+  const s = { reminders: { am: '07:30', pm: '21:30', lifestyle: '20:00', sunscreen: false }, routineLog: {}, lifestyle: {}, profile: null, analyses: [] };
+  const noon = new Date(2026, 9, 25, 12, 0);
+  const rows = todaySchedule(s, noon);
+  assert.deepEqual(rows.map((r) => [r.id, r.state]), [['am', 'due'], ['ls', 'upcoming'], ['pm', 'upcoming']]);
+  const done = todaySchedule({ ...s, lifestyle: { '2026-10-25': { sleepHours: 7 } } }, noon);
+  assert.equal(done.find((r) => r.id === 'ls').state, 'complete');
+  assert.equal(todaySchedule({ ...s, reminders: { ...s.reminders, sunscreen: true } }, noon).length, 6);
+});
+
+test('voice: long replies are split into short sentences for phones', async () => {
+  const { chunkText } = await import('../js/voice.js');
+  const long = 'Morning:\n1. Cleanse. 2. Treat with niacinamide for oiliness, which helps balance shine and keep pores looking small over time. 3. ' + 'Moisturize with a light gel that does not clog pores and keeps skin comfortable all day long, even in dry air, '.repeat(3) + 'Finish with sunscreen.';
+  const chunks = chunkText(long);
+  assert.ok(chunks.length > 2);
+  assert.ok(chunks.every((c) => c.length <= 260), 'no chunk is huge');
+  assert.equal(chunks.join(' ').replace(/[\s.,]+/g, ''), long.replace(/\n+/g, ' ').replace(/[\s.,]+/g, ''));
+  assert.deepEqual(chunkText('Hello there.'), ['Hello there.']);
+});
+
+test('chat follow-ups depend on the reply', async () => {
+  const { followUps } = await import('../js/views/chat.js');
+  assert.ok(followUps({ text: 'Your morning routine: cleanse' }).includes('Read my evening routine'));
+  assert.deepEqual(followUps({ text: 'call emergency', urgent: true }), []);
+  assert.ok(followUps({ text: 'something unrelated' }).length > 0);
+});

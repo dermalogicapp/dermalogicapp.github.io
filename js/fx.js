@@ -1,6 +1,8 @@
 // Motion helpers. Everything here degrades to the final state when the user
 // prefers reduced motion or the browser lacks IntersectionObserver.
 
+import { icon } from './icons.js';
+
 export const reducedMotion = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 // Fade/slide elements in as they scroll into view. Elements get .reveal in
@@ -99,3 +101,52 @@ export function burst(host, n = 16) {
     setTimeout(() => d.remove(), 1400);
   }
 }
+
+// Turns a grid into a swipeable card row on small screens. Mark the grid with
+// data-swipe="Label for screen readers". On wide screens the CSS keeps the grid
+// and hides the hint and dots.
+export function enhanceSwipe(root = document) {
+  root.querySelectorAll('[data-swipe]:not([data-swipe-ready])').forEach((track) => {
+    track.dataset.swipeReady = '1';
+    const cards = [...track.children];
+    if (cards.length < 2) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'swipe-wrap';
+    track.before(wrap);
+    wrap.append(track);
+    track.classList.add('swipe');
+    track.tabIndex = 0;
+    track.setAttribute('aria-label', `${track.dataset.swipe}. Swipe sideways to see more.`);
+    wrap.insertAdjacentHTML(
+      'beforeend',
+      `<div class="swipe-hint" aria-hidden="true"><span class="swipe-hand">${icon('swipe', { size: 22 })}</span><span>Swipe</span><span class="swipe-arrows"><i></i><i></i><i></i></span></div>
+       <div class="swipe-dots" aria-hidden="true">${cards.map((_, i) => `<span class="${i ? '' : 'on'}"></span>`).join('')}</div>`
+    );
+    const dots = [...wrap.querySelectorAll('.swipe-dots span')];
+    const hint = wrap.querySelector('.swipe-hint');
+    let moved = false;
+    track.addEventListener('scroll', () => {
+      const step = cards[1].offsetLeft - cards[0].offsetLeft || 1;
+      const i = Math.max(0, Math.min(cards.length - 1, Math.round(track.scrollLeft / step)));
+      dots.forEach((d, k) => d.classList.toggle('on', k === i));
+      if (!moved && track.scrollLeft > 24) {
+        moved = true;
+        hint.classList.add('gone');
+      }
+    }, { passive: true });
+  });
+}
+
+// Small ring tile for one concern (colour follows its level).
+export function metricTile({ label, score, level }) {
+  const text = { low: 'Low', moderate: 'Moderate', noticeable: 'Noticeable' }[level] || level;
+  return `<div class="mtile lvl-${level}"><span class="mt-label">${label}</span>
+    ${ring({ pct: score, label: `${label}: ${text}, ${score} out of 100`, sub: text, size: 76, stroke: 8 })}</div>`;
+}
+
+export const pillCta = (label, { href = '', id = '', small = false } = {}) => {
+  const inner = `<span>${label}</span><i class="pill-go">${icon('arrow', { size: 20 })}</i>`;
+  return href
+    ? `<a class="pill-cta${small ? ' pill-sm' : ''}" href="${href}" ${id ? `id="${id}"` : ''}>${inner}</a>`
+    : `<button type="button" class="pill-cta${small ? ' pill-sm' : ''}" ${id ? `id="${id}"` : ''}>${inner}</button>`;
+};

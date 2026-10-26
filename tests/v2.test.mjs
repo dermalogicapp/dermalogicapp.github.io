@@ -8,6 +8,8 @@ globalThis.localStorage = { getItem: (k) => (mem.has(k) ? mem.get(k) : null), se
 const { resolveRoute } = await import('../js/routes.js');
 const { skinScore, scoreTrend, nextAction, greeting } = await import('../js/score.js');
 const { cropRect, mapYoucamScores, mergeResults, analyzeInCloud } = await import('../js/youcam.js');
+const { CONFIG } = await import('../js/config.js');
+const REAL_CFG = { ...CONFIG };
 const auth = await import('../js/auth.js');
 const api = await import('../api/youcam.js');
 
@@ -92,7 +94,9 @@ test('validation and password strength', () => {
   assert.equal(auth.passwordStrength('abc').level, 0);
 });
 
-test('demo accounts: sign up, sign in, wrong password, duplicates, hashing', async () => {
+test('demo accounts: sign up, sign in, wrong password, duplicates, hashing', async (t) => {
+  Object.assign(CONFIG, { SUPABASE_URL: '', SUPABASE_ANON_KEY: '' });
+  t.after(() => Object.assign(CONFIG, REAL_CFG));
   const up = await auth.signUp({ name: 'Ada', email: ' Ada@Example.com ', password: 'secret123' });
   assert.equal(up.session.email, 'ada@example.com');
   assert.equal(up.session.mode, 'demo');

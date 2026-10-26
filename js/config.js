@@ -4,8 +4,8 @@
 export const CONFIG = {
   // Fill both in to switch email/password login from on-device demo mode to real
   // cloud accounts (see README, "Turn on real accounts").
-  SUPABASE_URL: '',
-  SUPABASE_ANON_KEY: '',
+  SUPABASE_URL: 'https://msfnymtnybcoznxirsrf.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_S8pTUSWFx-meuwAYVroXtA_tC6IHPP7',
 
   // Serverless function that holds the YouCam key (api/youcam.js on Vercel).
   YOUCAM_ENDPOINT: '/api/youcam',

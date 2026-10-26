@@ -1,5 +1,5 @@
 // Caches the app shell so DermaLogic opens offline after the first visit.
-const CACHE = 'dermalogic-v7';
+const CACHE = 'dermalogic-v8';
 const SHELL = [
   './', 'index.html', 'css/styles.css', 'css/v2.css', 'manifest.webmanifest', 'assets/icon.svg',
   'js/app.js', 'js/store.js', 'js/ui.js', 'js/analysis.js', 'js/camera.js', 'js/voice.js', 'js/chatbot.js',

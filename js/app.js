@@ -5,7 +5,7 @@ import { respond } from './chatbot.js';
 import { listen, speak, voiceSupport, isListening, stopListening, unlockAudio, cue, stopSpeaking } from './voice.js';
 import { stopCamera } from './camera.js';
 import { dropletIcon } from './icon.js';
-import { restoreSession, signOut as authSignOut } from './auth.js';
+import { restoreSession, signOut as authSignOut, parseRecoveryHash } from './auth.js';
 import { PUBLIC, resolveRoute } from './routes.js';
 import { art } from './art.js';
 import { icon } from './icons.js';
@@ -23,9 +23,9 @@ import reminders from './views/reminders.js';
 import settings from './views/settings.js';
 import landing from './views/landing.js';
 import onboarding from './views/onboarding.js';
-import { login, signup, forgot } from './views/auth.js';
+import { login, signup, forgot, reset, setRecovery } from './views/auth.js';
 
-const VIEWS = { home, analyze, profile, routine, complaints, progress, lifestyle, ingredients, chat, reminders, settings, landing, login, signup, forgot, welcome: onboarding };
+const VIEWS = { home, analyze, profile, routine, complaints, progress, lifestyle, ingredients, chat, reminders, settings, landing, login, signup, forgot, reset, welcome: onboarding };
 
 const SCENE = { analyze: 'scan', profile: 'profile', routine: 'routine', complaints: 'complaints', progress: 'progress', lifestyle: 'lifestyle', ingredients: 'ingredients', chat: 'chat', reminders: 'reminders', settings: 'settings' };
 
@@ -282,6 +282,12 @@ async function init() {
   setupVoiceFab();
   store.subscribe(applySettings);
 
+  const rec = parseRecoveryHash(location.hash);
+  if (rec) {
+    authSignOut();
+    setRecovery(rec);
+    history.replaceState(null, '', location.pathname + location.search + '#/reset');
+  }
   session = await restoreSession();
   if (session) store.setUser(session.uid);
   applySettings();

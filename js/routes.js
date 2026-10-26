@@ -1,5 +1,5 @@
 // Which page a hash should show, given who is signed in. Pure so it can be tested.
-export const PUBLIC = new Set(['landing', 'login', 'signup', 'forgot']);
+export const PUBLIC = new Set(['landing', 'login', 'signup', 'forgot', 'reset']);
 export const APP = ['home', 'analyze', 'profile', 'routine', 'complaints', 'progress', 'lifestyle', 'ingredients', 'chat', 'reminders', 'settings'];
 const KNOWN = new Set([...PUBLIC, ...APP, 'welcome']);
 

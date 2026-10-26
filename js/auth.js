@@ -154,6 +154,25 @@ export async function requestPasswordReset(email) {
   return true;
 }
 
+// Supabase's reset email opens the site with #access_token=...&type=recovery
+// (or #error_code=otp_expired). Pure so it can be tested.
+export function parseRecoveryHash(hash) {
+  const q = new URLSearchParams(String(hash || '').replace(/^#\/?/, '').replace(/^\?/, ''));
+  if (q.get('type') === 'recovery' && q.get('access_token')) return { token: q.get('access_token') };
+  if (q.get('error') && /otp|expired|denied/i.test(q.get('error_code') + q.get('error'))) {
+    return { error: 'That reset link has expired or was already used. Please request a new one.' };
+  }
+  return null;
+}
+
+export async function updatePassword(token, password) {
+  const errors = validateCredentials({ email: 'a@b.co', password }, { signup: true });
+  if (errors.password) throw Object.assign(new AuthError(errors.password), { fields: { password: errors.password } });
+  if (!cloudEnabled()) throw new AuthError('Password reset needs real accounts.');
+  await sb('/user', { method: 'PUT', body: { password }, token });
+  return true;
+}
+
 // On startup: keep the session if it is still valid; refresh it if it expired.
 // Offline is not a reason to sign someone out.
 export async function restoreSession() {

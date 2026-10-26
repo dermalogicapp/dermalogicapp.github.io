@@ -240,3 +240,19 @@ test('chat follow-ups depend on the reply', async () => {
   assert.deepEqual(followUps({ text: 'call emergency', urgent: true }), []);
   assert.ok(followUps({ text: 'something unrelated' }).length > 0);
 });
+
+test('password reset: parses the emailed link and updates the password', async (t) => {
+  assert.deepEqual(auth.parseRecoveryHash('#access_token=abc&refresh_token=r&type=recovery'), { token: 'abc' });
+  assert.match(auth.parseRecoveryHash('#error=access_denied&error_code=otp_expired&error_description=x').error, /expired/);
+  assert.equal(auth.parseRecoveryHash('#/login'), null);
+  assert.equal(resolveRoute('#/reset', false, false), 'reset');
+  const realFetch = globalThis.fetch;
+  let call;
+  globalThis.fetch = async (url, o) => { call = { url, o }; return { ok: true, json: async () => ({}) }; };
+  t.after(() => { globalThis.fetch = realFetch; });
+  await auth.updatePassword('tok', 'newpass123');
+  assert.match(call.url, /\/auth\/v1\/user$/);
+  assert.equal(call.o.method, 'PUT');
+  assert.equal(call.o.headers.Authorization, 'Bearer tok');
+  await assert.rejects(() => auth.updatePassword('tok', 'short'));
+});

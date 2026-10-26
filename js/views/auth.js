@@ -1,4 +1,4 @@
-import { signIn, signUp, requestPasswordReset, authMode, passwordStrength, validateCredentials, AuthError } from '../auth.js';
+import { signIn, signUp, requestPasswordReset, updatePassword, authMode, passwordStrength, validateCredentials, AuthError } from '../auth.js';
 import { esc, announce } from '../ui.js';
 import { icon } from '../icons.js';
 import { dropletIcon } from '../icon.js';
@@ -198,6 +198,48 @@ export const forgot = {
         const ok = root.querySelector('.ok-msg');
         ok.textContent = 'If that email has an account, a reset link is on its way.';
         announce(ok.textContent);
+      },
+    });
+  },
+};
+
+// Reached from the emailed link. app.js stashes the one-time token here and clears the URL.
+let recovery = null;
+export const setRecovery = (r) => { recovery = r; };
+
+export const reset = {
+  title: 'Choose a new password',
+  render(root) {
+    if (!recovery?.token) {
+      root.innerHTML = shell(
+        'Reset link problem',
+        esc(recovery?.error || 'This reset link is missing or has already been used.'),
+        '<a class="btn btn-primary btn-lg" href="#/forgot">Request a new link</a>',
+        '<a href="#/login">Back to log in</a>'
+      );
+      return;
+    }
+    root.innerHTML = shell(
+      'Choose a new password',
+      'Pick a new password for your DermaLogic account.',
+      `<form id="reset-form" novalidate>
+        ${field({ id: 'password', label: 'New password', type: 'password', autocomplete: 'new-password', extra: 'autofocus', hint: 'At least 8 characters, with letters and numbers.' })}
+        <p class="form-error error" role="alert"></p>
+        ${submitBtn('Save new password')}
+      </form>`,
+      '<a href="#/login">Back to log in</a>'
+    );
+    wire(root, root.querySelector('#reset-form'), {
+      label: 'Save new password',
+      onSubmit: async (v) => {
+        await updatePassword(recovery.token, v.password);
+        recovery = null;
+        root.querySelector('.auth-card').innerHTML = `<div class="confirm-box">
+          <div class="confirm-ic">${icon('check', { size: 34 })}</div>
+          <h1>Password updated</h1>
+          <p class="lead">You can now log in with your new password. If you opened the email on another app, come back to your browser and log in here.</p>
+          <a class="btn btn-primary btn-lg" href="#/login">Log in</a></div>`;
+        announce('Password updated. You can now log in.');
       },
     });
   },

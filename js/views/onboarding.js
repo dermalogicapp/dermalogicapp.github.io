@@ -4,6 +4,7 @@ import { CONCERNS, SKIN_TYPES, BODY_TYPES } from '../data/knowledge.js';
 import { dropletIcon } from '../icon.js';
 import { icon } from '../icons.js';
 import { art } from '../art.js';
+import { personAt } from '../pics.js';
 import { burst, reducedMotion } from '../fx.js';
 import { currentSession } from '../auth.js';
 
@@ -22,7 +23,7 @@ const SKIN_HINTS = {
   normal: 'Comfortable',
   sensitive: 'Stings or reddens easily',
 };
-const ART = { welcome: 'scan', goals: 'routine', skin: 'profile', history: 'complaints', reminders: 'reminders', privacy: 'scan' };
+const ART = { goals: 'routine', skin: 'profile', history: 'complaints', reminders: 'reminders', privacy: 'scan' };
 const STEPS = ['welcome', 'goals', 'skin', 'history', 'reminders', 'privacy', 'done'];
 
 export default {
@@ -75,7 +76,8 @@ export default {
 
     const views = {
       welcome: () => `
-        <div class="ob-hero">${dropletIcon({ variant: 'logo', size: 72 })}</div>
+        <div class="ob-faces" aria-hidden="true">${[0, 3, 2, 1, 5].map((i) => `<span>${personAt(i)}</span>`).join('')}</div>
+        <div class="ob-hero">${dropletIcon({ variant: 'logo', size: 56 })}</div>
         <h1 tabindex="-1" id="ob-h">Welcome${data.name ? `, ${esc(data.name)}` : ''}!</h1>
         <p class="lead">Let's set up DermaLogic around you. It takes about two minutes and you can skip anything.</p>
         <div class="field"><label for="ob-name">What should we call you?</label>

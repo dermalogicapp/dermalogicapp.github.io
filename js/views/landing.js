@@ -1,6 +1,7 @@
 import { dropletIcon } from '../icon.js';
 import { icon } from '../icons.js';
 import { art } from '../art.js';
+import { product, shelf, personAt, PEOPLE, TONES, PRODUCT_INFO } from '../pics.js';
 import { revealOnScroll, enhanceSwipe } from '../fx.js';
 import { publicHeader, publicFooter, wireScrollLinks } from './shared.js';
 
@@ -50,20 +51,8 @@ export default {
           <div class="phone">
             <div class="phone-notch"></div>
             <div class="scan-demo">
-              <svg viewBox="0 0 200 250" class="face-svg">
-                <defs>
-                  <linearGradient id="skin-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7c9d6"/><stop offset="1" stop-color="#e59ab3"/></linearGradient>
-                </defs>
-                <ellipse cx="100" cy="128" rx="68" ry="92" fill="url(#skin-g)"/>
-                <path d="M40 110c0-52 28-82 60-82s60 30 60 82c-18-26-36-36-60-36s-42 10-60 36Z" fill="#4a0e22"/>
-                <ellipse cx="76" cy="124" rx="9" ry="5" fill="#4a0e22" opacity=".75"/>
-                <ellipse cx="124" cy="124" rx="9" ry="5" fill="#4a0e22" opacity=".75"/>
-                <path d="M100 130v26m-9 0h18" stroke="#b25675" stroke-width="3" fill="none" stroke-linecap="round"/>
-                <path d="M82 182c12 9 24 9 36 0" stroke="#9b2c4f" stroke-width="4" fill="none" stroke-linecap="round"/>
-                <g class="scan-brackets" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round">
-                  <path d="M24 56V36h20M176 56V36h-20M24 200v20h20M176 200v20h-20"/>
-                </g>
-              </svg>
+              <div class="demo-faces">${[0, 1, 2, 3].map((i) => `<div class="demo-face" style="animation-delay:${i * 4}s">${personAt([0, 1, 3, 4][i])}</div>`).join('')}</div>
+              <svg viewBox="0 0 200 250" class="face-svg" aria-hidden="true"><g class="scan-brackets" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"><path d="M24 56V36h20M176 56V36h-20M24 200v20h20M176 200v20h-20"/></g></svg>
               <span class="scan-beam"></span>
               <span class="metric m1"><b>Hydration</b> <i>Good</i></span>
               <span class="metric m2"><b>Redness</b> <i>Low</i></span>
@@ -84,6 +73,13 @@ export default {
         </ul>
       </section>
 
+      <section class="l-section l-people" aria-labelledby="pp-h">
+        <div class="l-head reveal"><p class="eyebrow dark">Every skin tone</p><h2 id="pp-h">Made for all of us</h2><p class="l-sub">Skin tone is measured, not assumed. DermaLogic reads your own tone and undertone, and its advice works for very light to deep skin.</p></div>
+        <ul class="people" data-swipe="Skin tones">
+          ${PEOPLE.map((p, i) => `<li class="person reveal" data-delay="${i * 70}"><div class="person-pic">${personAt(i)}</div><strong>${TONES[p.tone].name}</strong></li>`).join('')}
+        </ul>
+      </section>
+
       <section class="l-section" id="features" aria-labelledby="f-h">
         <div class="l-head reveal"><p class="eyebrow dark">Features</p><h2 id="f-h">Everything your skin needs, in one place</h2></div>
         <ul class="feature-grid" data-swipe="Features">
@@ -92,6 +88,13 @@ export default {
               <span class="feature-ic">${icon(ic, { size: 26 })}</span>
               <h3>${t}</h3><p>${d}</p></li>`
           ).join('')}
+        </ul>
+      </section>
+
+      <section class="l-section l-products" id="products" aria-labelledby="pr-h">
+        <div class="l-head reveal"><p class="eyebrow dark">Your routine, in the bottle</p><h2 id="pr-h">Know what to use, and in what order</h2><p class="l-sub">DermaLogic builds your routine from these five product types and tells you which ingredients to look for on the label.</p></div>
+        <ul class="product-grid" data-swipe="Products in your routine">
+          ${['cleanser', 'serum', 'oil', 'lotion', 'sunscreen'].map((k, i) => `<li class="product-card reveal" data-delay="${i * 80}"><div class="product-stage">${product(k)}</div><span class="product-role">${PRODUCT_INFO[k].role}</span><h3>${PRODUCT_INFO[k].title}</h3><p>${PRODUCT_INFO[k].note}</p></li>`).join('')}
         </ul>
       </section>
 

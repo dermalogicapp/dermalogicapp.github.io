@@ -2,6 +2,8 @@
 // the scan guide. Palette: burgundy, pink, white. Motion is CSS (see v2.css)
 // and switches off with prefers-reduced-motion.
 
+import { productInner } from './pics.js';
+
 const defs = (id) => `<defs>
   <linearGradient id="${id}-s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9d3de"/><stop offset="1" stop-color="#e394ae"/></linearGradient>
   <linearGradient id="${id}-b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9b2c4f"/><stop offset="1" stop-color="#4a0e22"/></linearGradient>
@@ -40,7 +42,8 @@ const SCENES = {
   still: (id) => `<circle class="a-expand" cx="100" cy="72" r="40" fill="none" stroke="#fff" stroke-width="3"/>
     <circle class="a-expand" style="animation-delay:1s" cx="100" cy="72" r="40" fill="none" stroke="#fff" stroke-width="3"/>${face(id, 100, 74, 0.95)}`,
   // Routine: bottles
-  routine: (id) => `<g class="a-bob"><rect x="46" y="48" width="30" height="62" rx="9" fill="url(#${id}-b)"/><rect x="53" y="36" width="16" height="14" rx="4" fill="#fff"/><rect x="52" y="66" width="18" height="22" rx="4" fill="#fff" opacity=".85"/></g>
+  routine: (id) => `<g class="a-bob" transform="translate(8 12) scale(.64)">${productInner('serum')}</g><g class="a-bob" style="animation-delay:.5s" transform="translate(62 6) scale(.68)">${productInner('lotion')}</g><g class="a-bob" style="animation-delay:1s" transform="translate(120 12) scale(.64)">${productInner('sunscreen')}</g>`,
+  routineOld: (id) => `<g class="a-bob"><rect x="46" y="48" width="30" height="62" rx="9" fill="url(#${id}-b)"/><rect x="53" y="36" width="16" height="14" rx="4" fill="#fff"/><rect x="52" y="66" width="18" height="22" rx="4" fill="#fff" opacity=".85"/></g>
     <g class="a-bob" style="animation-delay:.6s"><rect x="92" y="62" width="40" height="48" rx="10" fill="url(#${id}-d)" stroke="#fff"/><rect x="96" y="52" width="32" height="12" rx="4" fill="#4a0e22"/></g>
     <g class="a-bob" style="animation-delay:1.2s"><path d="M146 110V76c0-8 5-14 12-14s12 6 12 14v34Z" fill="url(#${id}-b)"/><rect x="152" y="50" width="12" height="14" rx="3" fill="#fff"/></g>
     ${drop(78, 28, 6, 0, id)}${sparkle(122, 34, 0.5)}`,

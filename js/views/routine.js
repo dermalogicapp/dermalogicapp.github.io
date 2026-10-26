@@ -1,3 +1,4 @@
+import { product, stepProduct } from '../pics.js';
 import { store } from '../store.js';
 import { esc, ul } from '../ui.js';
 import { buildPlan } from '../recommend.js';
@@ -12,7 +13,7 @@ export default {
       return;
     }
     const plan = buildPlan(s.profile, s.analyses.at(-1)?.result);
-    const steps = (list) => `<ol class="routine">${list.map((x) => `<li><strong>${esc(x.step)}</strong><span>${esc(x.detail)}</span></li>`).join('')}</ol>`;
+    const steps = (list) => `<ol class="routine">${list.map((x) => `<li class="rstep">${stepProduct(x.step) ? `<span class="rthumb">${product(stepProduct(x.step))}</span>` : ''}<span class="rtext"><strong>${esc(x.step)}</strong><span>${esc(x.detail)}</span></span></li>`).join('')}</ol>`;
     const bp = plan.bleachingPlan;
 
     root.innerHTML = `

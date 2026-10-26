@@ -3,12 +3,13 @@ import { esc, announce } from '../ui.js';
 import { icon } from '../icons.js';
 import { dropletIcon } from '../icon.js';
 import { art } from '../art.js';
+import { shelf } from '../pics.js';
 
 const shell = (title, sub, body, alt) => `
   <div class="pub auth">
     <aside class="auth-side" aria-hidden="false">
       <a class="pub-brand" href="#/landing" aria-label="Back to DermaLogic home">${dropletIcon({ variant: 'logo', size: 38 })}<span>DermaLogic</span></a>
-      <div class="auth-art">${art('scan')}</div>
+      <div class="auth-art">${shelf(['cleanser', 'serum', 'lotion', 'sunscreen'])}</div>
       <p class="auth-pitch">Your skin, understood.</p>
       <ul class="auth-points">
         <li>${icon('scan', { size: 20 })} AI skin scan and personalised routine</li>

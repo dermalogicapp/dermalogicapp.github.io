@@ -7,6 +7,7 @@ import { dropletIcon } from '../icon.js';
 import { icon } from '../icons.js';
 import { ring, animateRings, revealOnScroll, enhanceSwipe, metricTile, pillCta } from '../fx.js';
 import { art } from '../art.js';
+import { product, stepProduct, portrait, toneIndex } from '../pics.js';
 import { CONCERNS } from '../data/knowledge.js';
 import { skinScore, scoreTrend, greeting, nextAction } from '../score.js';
 
@@ -61,6 +62,7 @@ export default {
           .map(
             (st, i) => `<label class="check">
               <input type="checkbox" data-part="${key}" value="${i}" ${log[key]?.includes(i) ? 'checked' : ''} />
+              ${stepProduct(st.step) ? `<span class="cthumb">${product(stepProduct(st.step))}</span>` : ''}
               <span><strong>${esc(st.step)}</strong> <span class="muted">${esc(st.detail)}</span></span>
             </label>`
           )
@@ -89,7 +91,9 @@ export default {
 
     root.innerHTML = `
       <section class="hero dash-hero" aria-labelledby="hero-h">
-        <div>
+        <div class="hero-main">
+          <span class="hero-avatar">${portrait({ tone: last ? toneIndex(last.result.tone.category) : 4, hair: ['afro', 'braids', 'bob', 'bun', 'short', 'hijab'][(s.profile?.name || 'a').length % 6], className: 'avatar-pic' })}</span>
+          <div>
           <h1 id="hero-h">${greeting()}${name}</h1>
           <p>${fmtDate(new Date().toISOString(), { dateStyle: 'full' })}</p>
           <a class="hero-next" href="#/${next.route}" ${next.anchor ? `data-anchor="${next.anchor}"` : ''}>
@@ -97,6 +101,7 @@ export default {
             <span><strong>${esc(next.label)}</strong><small>${esc(next.why)}</small></span>
             ${icon('arrow', { size: 20 })}
           </a>
+          </div>
         </div>
         ${dropletIcon({ variant: 'banner' })}
       </section>

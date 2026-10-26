@@ -59,6 +59,10 @@ Each scan uses 8 standard-definition checks (12 credits on YouCam's standard tie
 2. Copy the project URL and the `anon` public key into `js/config.js` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`). The anon key is meant to be public.
 3. Redeploy. Log in, sign-up and password reset now use Supabase. Skincare data still stays on the user's device.
 
+### Pictures: drawn, with a slot for real photos
+
+The people and the product bottles (cleanser, serum, face oil, lotion, sunscreen) are drawn illustrations in `js/pics.js`, so the app ships with no copyrighted images. To use real photos, add the files to `assets/photos/` and list their names in `PHOTO_FILES` in `js/pics.js`. Use photos you have the right to use, and for faces, people who agreed to appear.
+
 ## Features
 
 | Area | What it does |

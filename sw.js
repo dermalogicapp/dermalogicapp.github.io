@@ -1,9 +1,9 @@
 // Caches the app shell so DermaLogic opens offline after the first visit.
-const CACHE = 'dermalogic-v6';
+const CACHE = 'dermalogic-v7';
 const SHELL = [
   './', 'index.html', 'css/styles.css', 'css/v2.css', 'manifest.webmanifest', 'assets/icon.svg',
   'js/app.js', 'js/store.js', 'js/ui.js', 'js/analysis.js', 'js/camera.js', 'js/voice.js', 'js/chatbot.js',
-  'js/ingredients.js', 'js/recommend.js', 'js/reminders.js', 'js/lifestyle.js', 'js/icon.js', 'js/icons.js', 'js/fx.js', 'js/auth.js', 'js/config.js', 'js/youcam.js', 'js/score.js', 'js/art.js', 'js/coach.js', 'js/routes.js',
+  'js/ingredients.js', 'js/recommend.js', 'js/reminders.js', 'js/lifestyle.js', 'js/icon.js', 'js/icons.js', 'js/fx.js', 'js/auth.js', 'js/config.js', 'js/youcam.js', 'js/score.js', 'js/pics.js', 'js/art.js', 'js/coach.js', 'js/routes.js',
   'js/data/ingredients-db.js', 'js/data/knowledge.js',
   'js/views/home.js', 'js/views/analyze.js', 'js/views/profile.js', 'js/views/routine.js', 'js/views/complaints.js',
   'js/views/progress.js', 'js/views/lifestyle.js', 'js/views/ingredients.js', 'js/views/chat.js', 'js/views/reminders.js', 'js/views/settings.js', 'js/views/landing.js', 'js/views/auth.js', 'js/views/onboarding.js', 'js/views/shared.js',
